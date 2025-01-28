@@ -1,2 +1,3 @@
 # DoContrib
-A website that Tracks your teammates' contribution progress.
+
+A website that tracks your teammates' contribution progress.
