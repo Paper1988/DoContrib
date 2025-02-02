@@ -1,4 +1,5 @@
 'use client';
+import LoginButton from '@/components/GoogleLoginButton';
 import { useEffect, useState } from 'react';
 
 interface GlowPoint {
@@ -14,6 +15,12 @@ interface GlowPoint {
 
 export default function Home() {
 	const [glowPoints, setGlowPoints] = useState<GlowPoint[]>([]);
+	const [darkMode, setDarkMode] = useState(false);
+
+	const toggleDarkMode = () => {
+		setDarkMode(!darkMode);
+        console.log(darkMode)
+    }
 
 	useEffect(() => {
 		const points: GlowPoint[] = [
@@ -31,37 +38,49 @@ export default function Home() {
 	}, []);
 
 	return (
-		<div className="flex flex-col items-center justify-center h-screen relative overflow-auto cursor-default">
-			<div className="absolute inset-0">
-				{glowPoints.map((point, index) => (
-					<div
-						key={index}
-						className={`glow-point absolute rounded-full ${point.blur} ${point.animation}`}
-						style={{
-							top: `${point.top}%`,
-							left: `${point.left}%`,
-							width: `${point.size}px`,
-							height: `${point.size}px`,
-							background: `radial-gradient(circle at center, ${point.color} ${point.opacity}%, transparent 70%)`,
-							transform: `scale(${point.scale})`,
-							boxShadow: `0 0 ${point.size * 2}px ${point.size}px ${point.color}`
-						}}
-					/>
-				))}
-			</div>
+		<div className={`${darkMode && "dark"} cursor-default`}>
+			<div className="flex flex-col items-center justify-center h-screen relative overflow-auto">
+				<div className="absolute inset-0">
+					{glowPoints.map((point, index) => (
+						<div
+							key={index}
+							className={`glow-point absolute rounded-full ${point.blur} ${point.animation}`}
+							style={{
+								top: `${point.top}%`,
+								left: `${point.left}%`,
+								width: `${point.size}px`,
+								height: `${point.size}px`,
+								background: `radial-gradient(circle at center, ${point.color} ${point.opacity}%, transparent 70%)`,
+								transform: `scale(${point.scale})`,
+								boxShadow: `0 0 ${point.size * 2}px ${point.size}px ${point.color}`
+							}}
+						/>
+					))}
+				</div>
 
-			<div className="bg-black/40 backdrop-blur-sm w-full h-full flex flex-col items-center justify-center gap-8 relative z-10">
-				<h1 className="text-8xl font-bold font-geist-sans text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-500 sticky top-4 left-4 hover:scale-105 peer-[.scrolled]:opacity-0">DoContrib</h1>
-				<div className="text-white text-lg animate-bounce absolute bottom-4">
-					<i className="animate-bounce fa fa-arrow-down">▼</i>
+				<div className="bg-black/40 backdrop-blur-sm w-full h-full flex flex-col items-center justify-center gap-8 absolute z-10">
+					<h1 className="text-8xl font-bold font-geist-sans text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-500 sticky top-4 left-4 hover:scale-105 peer-[.scrolled]:opacity-0">DoContrib</h1>
+					<div className="text-white text-lg animate-bounce absolute bottom-4">
+						<i className="animate-bounce fa fa-arrow-down">▼</i>
+					</div>
 				</div>
 			</div>
 
-			{/* <div className="container mx-auto px-4 py-20">
-				<h1 className="text-4xl font-bold mb-8 align-middle text-white">歡迎使用 DoContrib</h1>
+			<button className="fixed w-16 h-16 bottom-16 right-16 z-10 bg-black/40 dark:bg-white rounded-full text-white dark:text-black font-semibold" onClick={toggleDarkMode}>
+				{darkMode ? 'LIT' : 'DRK'}
+			</button>
 
+			<div className="fixed bottom-0 left-0 right-0 z-20 bg-black/40 dark:bg-white text-white dark:text-black p-4">
+				<p className="text-center">This is a demo site for DoContrib. It&apos;s a work in progress
+					and not yet ready for production use. Please don&apos;t use real data.</p>
+			</div>
+
+			<LoginButton/>
+
+			<div className="mx-auto px-4 py-20 bg-black/40">
+				<h1 className="text-4xl font-bold mb-8 align-middle text-white text-center">歡迎使用 DoContrib</h1>
 				<section className="space-y-6 text-white">
-					<div>
+					<div className=''>
 						<h2 className="text-2xl font-semibold mb-4">DoContrib 是什麼？</h2>
 						<p>
 							DoContrib 是一個開源的團隊貢獻追蹤和管理平台。我們的目標是幫助團隊更有效地追蹤和管理貢獻，提高團隊協作效率。
@@ -83,26 +102,11 @@ export default function Home() {
 							<li>用戶至上：我們將用戶需求放在首位</li>
 							<li>開源透明：我們致力於開源和透明</li>
 							<li>持續創新：我們不斷創新，追求卓越</li>
-							<li>團隊合作：我們相信團隊合作的力量</li>
-						</ul>
-					</div>
-
-					<div>
-						<h2 className="text-2xl font-semibold mb-4">聯繫我們</h2>
-						<p>
-							如果您有任何問題或建議，請隨時與我們聯繫：
-						</p>
-						<ul className="list-disc list-inside space-y-2 mt-2">
-							<li>電子郵件：
-								<a href="mailto:docontrib@gmail.com" className="text-blue-400 hover:underline">docontrib@gmail.com</a>
-							</li>
-							<li>社群：
-								<a href="https://discord.gg/EqA35cDEW5" className="text-blue-400 hover:underline">Discord 伺服器</a>
-							</li>
+								<li>團隊合作：我們相信團隊合作的力量</li>
 						</ul>
 					</div>
 				</section>
-			</div> */}
+			</div>
 		</div>
 	);
 }
