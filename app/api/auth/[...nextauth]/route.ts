@@ -1,11 +1,22 @@
 import { createClient } from '@supabase/supabase-js'
-import NextAuth, { NextAuthOptions } from 'next-auth'
+import NextAuth, { NextAuthOptions, Session } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
+
+interface CustomUser {
+    id?: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
+}
+
+interface CustomSession extends Session {
+    user: CustomUser
+}
 
 const authOptions: NextAuthOptions = {
     providers: [
@@ -44,7 +55,7 @@ const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             if (session?.user) {
-                session.user.id = token.sub // 儲存 Google UID
+                ;(session as CustomSession).user.id = token.sub
             }
             return session
         }
