@@ -1,19 +1,51 @@
 "use client";
+import { Avatar, Box, Button, IconButton, Menu, Tooltip } from '@mui/material';
 import { signIn, signOut, useSession } from "next-auth/react";
+import { MouseEvent, useState } from 'react';
 
 export default function LoginButton() {
     const { data: session } = useSession();
+    const [ anchorElUser, setAnchorElUser ] = useState<null | HTMLElement>(null);
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
 
     return (
-        <div className="flex items-center justify-center p-4 m-4 dark:bg-gray-800">
+        <>
             {session ? (
-                <div className="items-center text-center">
-                    <p>歡迎, {session.user?.name}！</p>
-                    <button onClick={() => signOut()}>登出</button>
-                </div>
+                <Box sx={{ flexGrow: 0 }}>
+                    <Tooltip title={session.user?.name}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                            <Avatar src={session.user?.image ?? ""} />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Menu
+                        sx={{ mt: '45px' }}
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorElUser)}
+                        onClose={handleCloseUserMenu}
+                    >
+                        <Button sx={{ textAlign: 'center' }} onClick={() => signOut()}>登出</Button>
+                    </Menu>
+                </Box>
             ) : (
-                <button onClick={() => signIn("google")}>使用 Google 登入</button>
+                <Button onClick={() => signIn("google")}>使用 Google 登入</Button>
             )}
-        </div>
+        </>
     );
 }

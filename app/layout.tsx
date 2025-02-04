@@ -1,4 +1,5 @@
 import "@/style/globals.css";
+import { StyledEngineProvider } from "@mui/material";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
@@ -36,7 +37,9 @@ export default function RootLayout({
 	return (
 		<html lang="zh-TW" suppressHydrationWarning>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<Providers>{children}</Providers>
+				<StyledEngineProvider>
+					<Providers>{children}</Providers>
+				</StyledEngineProvider>
 				<SpeedInsights />
 				<Analytics />
 			</body>
