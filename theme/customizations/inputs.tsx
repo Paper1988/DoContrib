@@ -29,7 +29,7 @@ export const inputsCustomizations: Components<Theme> = {
         styleOverrides: {
         root: ({ theme }) => ({
             boxShadow: 'none',
-            borderRadius: (theme.vars || theme).shape.borderRadius,
+            borderRadius: theme.shape.borderRadius,
             textTransform: 'none',
             variants: [
             {
@@ -111,7 +111,7 @@ export const inputsCustomizations: Components<Theme> = {
                 variant: 'outlined',
                 },
                 style: {
-                color: (theme.vars || theme).palette.text.primary,
+                color: theme.palette.text.primary,
                 border: '1px solid',
                 borderColor: gray[200],
                 backgroundColor: alpha(gray[50], 0.3),
@@ -223,11 +223,11 @@ export const inputsCustomizations: Components<Theme> = {
         styleOverrides: {
         root: ({ theme }) => ({
             boxShadow: 'none',
-            borderRadius: (theme.vars || theme).shape.borderRadius,
+            borderRadius: theme.shape.borderRadius,
             textTransform: 'none',
             fontWeight: theme.typography.fontWeightMedium,
             letterSpacing: 0,
-            color: (theme.vars || theme).palette.text.primary,
+            color: theme.palette.text.primary,
             border: '1px solid ',
             borderColor: gray[200],
             backgroundColor: alpha(gray[50], 0.3),
@@ -381,10 +381,10 @@ export const inputsCustomizations: Components<Theme> = {
         },
         root: ({ theme }) => ({
             padding: '8px 12px',
-            color: (theme.vars || theme).palette.text.primary,
-            borderRadius: (theme.vars || theme).shape.borderRadius,
-            border: `1px solid ${(theme.vars || theme).palette.divider}`,
-            backgroundColor: (theme.vars || theme).palette.background.default,
+            color: theme.palette.text.primary,
+            borderRadius: theme.shape.borderRadius,
+            border: `1px solid ${theme.palette.divider}`,
+            backgroundColor: theme.palette.background.default,
             transition: 'border 120ms ease-in',
             '&:hover': {
             borderColor: gray[400],
@@ -425,9 +425,9 @@ export const inputsCustomizations: Components<Theme> = {
     MuiInputAdornment: {
         styleOverrides: {
         root: ({ theme }) => ({
-            color: (theme.vars || theme).palette.grey[500],
+            color: theme.palette.grey[500],
             ...theme.applyStyles('dark', {
-            color: (theme.vars || theme).palette.grey[400],
+            color: theme.palette.grey[400],
             }),
         }),
         },
