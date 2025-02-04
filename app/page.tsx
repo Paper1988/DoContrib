@@ -17,7 +17,7 @@ interface GlowPoint {
 	scale: number;
 }
 
-export default function Home(props: { disableCustomTheme?: boolean }) {
+export default function Home() {
 	const [glowPoints, setGlowPoints] = useState<GlowPoint[]>([]);
 
 	useEffect(() => {
@@ -49,7 +49,7 @@ export default function Home(props: { disableCustomTheme?: boolean }) {
 			transition={{ duration: 0.4 }}
 			className='cursor-default'
 		>
-			<AppTheme {...props}>
+			<AppTheme>
 				<CssBaseline enableColorScheme />
 
 				<NavBar />
