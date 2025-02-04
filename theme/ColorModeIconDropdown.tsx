@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useColorScheme } from '@mui/material/styles';
 import * as React from 'react';
-
+	
 export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
 	const { mode, systemMode, setMode } = useColorScheme();
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,18 +23,18 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
 	};
 	if (!mode) {
 		return (
-		<Box
-			data-screenshot="toggle-mode"
-			sx={(theme) => ({
-			verticalAlign: 'bottom',
-			display: 'inline-flex',
-			width: '2.25rem',
-			height: '2.25rem',
-			borderRadius: (theme.vars || theme).shape.borderRadius,
-			border: '1px solid',
-			borderColor: (theme.vars || theme).palette.divider,
-			})}
-		/>
+			<Box
+				data-screenshot="toggle-mode"
+				sx={(theme) => ({
+					verticalAlign: 'bottom',
+					display: 'inline-flex',
+					width: '2.25rem',
+					height: '2.25rem',
+					borderRadius: theme.shape.borderRadius,
+					border: '1px solid',
+					borderColor: theme.palette.divider,
+				})}
+			/>
 		);
 	}
 	const resolvedMode = (systemMode || mode) as 'light' | 'dark';
@@ -44,46 +44,46 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
 	}[resolvedMode];
 	return (
 		<React.Fragment>
-		<IconButton
-			data-screenshot="toggle-mode"
-			onClick={handleClick}
-			disableRipple
-			size="small"
-			aria-controls={open ? 'color-scheme-menu' : undefined}
-			aria-haspopup="true"
-			aria-expanded={open ? 'true' : undefined}
-			{...props}
-		>
-			{icon}
-		</IconButton>
-		<Menu
-			anchorEl={anchorEl}
-			id="account-menu"
-			open={open}
-			onClose={handleClose}
-			onClick={handleClose}
-			slotProps={{
-			paper: {
-				variant: 'outlined',
-				elevation: 0,
-				sx: {
-				my: '4px',
-				},
-			},
-			}}
-			transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-			anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-		>
-			<MenuItem selected={mode === 'system'} onClick={handleMode('system')}>
-			System
-			</MenuItem>
-			<MenuItem selected={mode === 'light'} onClick={handleMode('light')}>
-			Light
-			</MenuItem>
-			<MenuItem selected={mode === 'dark'} onClick={handleMode('dark')}>
-			Dark
-			</MenuItem>
-		</Menu>
+			<IconButton
+				data-screenshot="toggle-mode"
+				onClick={handleClick}
+				disableRipple
+				size="small"
+				aria-controls={open ? 'color-scheme-menu' : undefined}
+				aria-haspopup="true"
+				aria-expanded={open ? 'true' : undefined}
+				{...props}
+			>
+				{icon}
+			</IconButton>
+			<Menu
+				anchorEl={anchorEl}
+				id="account-menu"
+				open={open}
+				onClose={handleClose}
+				onClick={handleClose}
+				slotProps={{
+					paper: {
+						variant: 'outlined',
+						elevation: 0,
+						sx: {
+							my: '4px',
+						},
+					},
+				}}
+				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+			>
+				<MenuItem selected={mode === 'system'} onClick={handleMode('system')}>
+					System
+				</MenuItem>
+				<MenuItem selected={mode === 'light'} onClick={handleMode('light')}>
+					Light
+				</MenuItem>
+				<MenuItem selected={mode === 'dark'} onClick={handleMode('dark')}>
+					Dark
+				</MenuItem>
+			</Menu>
 		</React.Fragment>
 	);
 }
