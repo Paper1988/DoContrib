@@ -6,12 +6,8 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-interface Params {
-    userId?: string
-}
-
-export async function GET({ params }: { params: Params }) {
-    const { userId } = await params
+export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+    const userId = (await params).userId
 
     if (!userId) {
         return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
@@ -30,9 +26,8 @@ export async function GET({ params }: { params: Params }) {
     return NextResponse.json(data)
 }
 
-export async function POST(req: NextRequest, context: { params: { userId: string } }) {
-    const { params } = context
-    const userId = params.userId
+export async function POST(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+    const userId = (await params).userId
     const { bio } = await req.json()
 
     if (!userId || !bio) {
