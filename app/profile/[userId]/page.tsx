@@ -4,13 +4,12 @@ import { Avatar } from '@mui/material';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useSession } from 'next-auth/react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
-    const { userId } = useParams(); // 🔥 用 useParams() 拿 userId
+    const { userId } = useParams();
     const { data: session } = useSession();
-    const router = useRouter();
     const [profile, setProfile] = useState<{ name: string; email: string; image: string; bio: string } | null>(null);
 
     // TipTap 編輯器初始化

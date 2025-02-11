@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
             return token
         },
 
-        async session({ session, token }) {
+        async session({ session }) {
             if (session?.user) {
                 const { data: userData, error } = await supabaseClient
                     .from('Users')

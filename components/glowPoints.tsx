@@ -9,22 +9,23 @@ interface GlowPoint {
 }
 
 export function GlowPoints() {
-	const fixedColors = [
-		"rgb(34, 211, 238)",
-		"rgb(20, 184, 166)",
-		"rgb(99, 102, 241)",
-		"rgb(139, 92, 246)",
-	];
-
 	const [glowPoints, setGlowPoints] = useState<GlowPoint[]>([]);
 
 	useEffect(() => {
+		const fixedColors = [
+			"rgb(34, 211, 238)",
+			"rgb(20, 184, 166)",
+			"rgb(99, 102, 241)",
+			"rgb(139, 92, 246)",
+		];
+
 		const points: GlowPoint[] = Array.from({ length: 5 }).map((_, index) => ({
 			id: index,
 			size: Math.random() * 40 + 20,
 			color: fixedColors[index % fixedColors.length],
 			blur: "blur-3xl",
 		}));
+		
 		setGlowPoints(points);
 	}, []);
 

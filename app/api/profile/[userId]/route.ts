@@ -26,7 +26,6 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     return NextResponse.json(data)
 }
 
-// 🚀 新增 API：讓用戶可以更新 Bio
 export async function POST(req: NextRequest, context: { params: { userId: string } }) {
     const { params } = context
     const userId = params.userId
