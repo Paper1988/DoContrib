@@ -1,4 +1,3 @@
-import ColorModeIconDropdown from '@/theme/ColorModeIconDropdown';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, MenuItem, Toolbar } from "@mui/material";
@@ -52,72 +51,86 @@ export default function NavBar() {
             }}>
             <Container maxWidth="lg">
                 <StyledToolbar variant="dense" disableGutters>
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    <Button variant="text" color="info" size="small" href="/#">
-                        Home
-                    </Button>
-                    <Button variant="text" color="info" size="small" href="/dashboard">
-                        Dashboard
-                    </Button>
-                    <Button variant="text" color="info" size="small">
-                        Contact
-                    </Button>
-                    <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                        FAQ
-                    </Button>
+                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                            <Button variant="text" color="info" size="small" href="/#">
+                                Home
+                            </Button>
+                            <Button variant="text" color="info" size="small" href="/#about">
+                                About
+                            </Button>
+                            <Button variant="text" color="info" size="small" href="/contact">
+                                Contact
+                            </Button>
+                            <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+                                FAQ
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
-                <Box
-                    sx={{
-                    display: { xs: 'none', md: 'flex' },
-                    gap: 1,
-                    alignItems: 'center',
-                    }}
-                >
-                    <LoginButton/>
-                    {/* <ColorModeIconDropdown /> */}
-                </Box>
-                <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
-                    <ColorModeIconDropdown size="medium" />
-                    <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
-                    <MenuIcon />
-                    </IconButton>
-                    <Drawer
-                    anchor="top"
-                    open={open}
-                    onClose={toggleDrawer(false)}
-                    PaperProps={{
-                        sx: {
-                        top: 'var(--template-frame-height, 0px)',
-                        },
-                    }}
-                    >
-                    <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                        <Box
+                    <Box
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
+                        display: { xs: 'none', md: 'flex' },
+                        gap: 1,
+                        alignItems: 'center',
+                        }}
+                    >
+                        <LoginButton/>
+                        {/* <ColorModeIconDropdown /> */}
+                    </Box>
+                    <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+                        {/* <ColorModeIconDropdown size="medium" /> */}
+                        <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
+                            <MenuIcon />
+                        </IconButton>
+                        <Drawer
+                        anchor="top"
+                        open={open}
+                        onClose={toggleDrawer(false)}
+                        PaperProps={{
+                            sx: {
+                            top: 'var(--template-frame-height, 0px)',
+                            },
                         }}
                         >
-                        <IconButton onClick={toggleDrawer(false)}>
-                            <CloseRoundedIcon />
-                        </IconButton>
-                        </Box>
+                            <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
+                                <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                }}
+                                >
+                                    <IconButton onClick={toggleDrawer(false)}>
+                                        <CloseRoundedIcon />
+                                    </IconButton>
+                                </Box>
 
-                        <MenuItem>Features</MenuItem>
-                        <MenuItem>Testimonials</MenuItem>
-                        <MenuItem>Highlights</MenuItem>
-                        <MenuItem>Pricing</MenuItem>
-                        <MenuItem>FAQ</MenuItem>
-                        <MenuItem>Blog</MenuItem>
-                        <Divider sx={{ my: 3 }} />
-                        <MenuItem>
-                        <LoginButton/>
-                        </MenuItem>
+                                <MenuItem>
+                                    <Button variant="text" color="info" size="small" href="/#">
+                                        Home
+                                    </Button>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Button variant="text" color="info" size="small" href="/#about">
+                                        About
+                                    </Button>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Button variant="text" color="info" size="small">
+                                        Contact
+                                    </Button>
+                                </MenuItem>
+                                <MenuItem>
+                                    <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+                                        FAQ
+                                    </Button>
+                                </MenuItem>
+
+                                <Divider sx={{ my: 3 }} />
+
+                                <LoginButton />
+                            </Box>
+                        </Drawer>
                     </Box>
-                    </Drawer>
-                </Box>
                 </StyledToolbar>
             </Container>
         </AppBar>

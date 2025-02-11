@@ -1,47 +1,21 @@
 'use client';
 import NavBar from '@/components/NavBar';
 import AppTheme from '@/theme/AppTheme';
-import { Alert, Box, CircularProgress, CssBaseline } from '@mui/material';
+import { Alert, CircularProgress, CssBaseline } from '@mui/material';
 import { motion } from "framer-motion";
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
 
-interface GlowPoint {
-	size: number;
-	color: string;
-	top: number;
-	left: number;
-	blur: string;
-	opacity: number;
-	animation: string;
-	scale: number;
-}
+import { GlowPoints } from '@/components/glowPoints';
 
 export default function Home() {
-	const [glowPoints, setGlowPoints] = useState<GlowPoint[]>([]);
-
-	useEffect(() => {
-		const points: GlowPoint[] = [
-			{ size: 16, color: 'rgb(34, 211, 238)', opacity: 40, blur: 'blur-2xl', animation: 'animate-float-slower', scale: 1.4 },
-			{ size: 24, color: 'rgb(20, 184, 166)', opacity: 45, blur: 'blur-2xl', animation: 'animate-float', scale: 1.3 },
-			{ size: 32, color: 'rgb(99, 102, 241)', opacity: 40, blur: 'blur-3xl', animation: 'animate-float-slow', scale: 1.5 },
-			{ size: 40, color: 'rgb(139, 92, 246)', opacity: 40, blur: 'blur-3xl', animation: 'animate-float-slower', scale: 1.6 },
-		].map(point => ({
-			...point,
-			top: Math.random() * 80 + 10,
-			left: Math.random() * 80 + 10,
-		}));
-
-		setGlowPoints(points);
-	}, []);
-
 	const { status } = useSession()
 
 	if (status === 'loading') return (
-		<Box sx={{ display: 'flex' }}>
-			<CircularProgress />
-		</Box>
+		<div className="flex flex-col items-center justify-center h-screen relative overflow-auto">
+			<CircularProgress size={70} />
+		</div>
 	)
+	
 	return (
 		<motion.div
 			initial={{ opacity: 0.1 }}
@@ -53,25 +27,8 @@ export default function Home() {
 				<CssBaseline enableColorScheme />
 
 				<NavBar />
-				<div className="flex flex-col items-center justify-center h-screen relative overflow-auto">
-					<div className="absolute inset-0">
-						{glowPoints.map((point, index) => (
-							<div
-								key={index}
-								className={`glow-point absolute rounded-full ${point.blur} ${point.animation}`}
-								style={{
-									top: `${point.top}%`,
-									left: `${point.left}%`,
-									width: `${point.size}px`,
-									height: `${point.size}px`,
-									background: `radial-gradient(circle at center, ${point.color} ${point.opacity}%, transparent 70%)`,
-									transform: `scale(${point.scale})`,
-									boxShadow: `0 0 ${point.size * 2}px ${point.size}px ${point.color}`
-								}}
-							/>
-						))}
-					</div>
-
+				<div className="flex flex-col items-center justify-center h-screen relative overflow-hidden">
+					<GlowPoints />
 					<div className="bg-black/40 backdrop-blur-sm w-full h-full flex flex-col items-center justify-center gap-8 z-10">
 						<h1 className="font-bold font-geist-sans text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-500 top-4 left-4 hover:scale-105 text-4xl md:text-6xl lg:text-8xl">DoContrib</h1>
 						<div className="text-white text-lg animate-bounce absolute bottom-4">
@@ -80,12 +37,12 @@ export default function Home() {
 					</div>
 				</div>
 
-				<Alert severity="warning" className="fixed bottom-0 left-0 right-0 z-20 bg-black/40 dark:bg-white text-white dark:text-black p-4">
+				<Alert severity="warning" className="fixed bottom-0 left-0 right-0 z-20 bg-black/40 p-4">
 					<p className="text-center">This is a demo site for DoContrib. It&apos;s a work in progress
 						and not yet ready for production use. Please don&apos;t use real data.</p>
 				</Alert>
 
-				<div className="mx-auto px-4 py-20 bg-black/40 backdrop-blur-sm">
+				<div className="mx-auto px-4 py-20 bg-black/40 backdrop-blur-sm" id="about">
 					<h1 className="font-bold mb-8 align-middle text-white text-center text-2xl md:text-3xl lg:text-4xl">歡迎使用 DoContrib</h1>
 					<section className="space-y-6 text-white">
 						<div className=''>

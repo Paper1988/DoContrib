@@ -20,7 +20,7 @@ export default function LoginButton() {
             {session ? (
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title={session.user?.name}>
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} className='rounded-full'>
                             <Avatar src={session.user?.image ?? ""} />
                         </IconButton>
                     </Tooltip>
@@ -40,11 +40,17 @@ export default function LoginButton() {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
-                        <Button sx={{ textAlign: 'center' }} onClick={() => signOut()}>登出</Button>
+                        <Button variant="text" color="info" size="small" href="/dashboard" sx={{ marginLeft: 2 }}>
+                            Dashboard
+                        </Button>
+                        <Button variant="text" color="info" size="small" href="/profile" sx={{ marginLeft: 2 }}>
+                            Profile
+                        </Button>
+                        <Button variant="text" color="info" size="small" sx={{ textAlign: 'center', marginLeft: 0.5, marginRight: 2 }} onClick={() => signOut()}>登出</Button>
                     </Menu>
                 </Box>
             ) : (
-                <Button onClick={() => signIn("google")}>使用 Google 登入</Button>
+                <Button variant="outlined" onClick={() => signIn("google")}>使用 Google 登入</Button>
             )}
         </>
     );

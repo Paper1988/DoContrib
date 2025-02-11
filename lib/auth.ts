@@ -1,6 +1,6 @@
 import { SupabaseAdapter } from '@next-auth/supabase-adapter'
 import { createClient } from '@supabase/supabase-js'
-import { NextAuthOptions, Session } from 'next-auth'
+import { DefaultSession, DefaultUser, NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
 const supabaseClient = createClient(
@@ -8,14 +8,12 @@ const supabaseClient = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-interface CustomUser {
-    id?: string
-    name?: string | null
-    email?: string | null
-    image?: string | null
+interface CustomUser extends DefaultUser {
+    id: string
+    bio: string
 }
 
-interface CustomSession extends Session {
+interface CustomSession extends DefaultSession {
     user: CustomUser
 }
 
@@ -36,11 +34,10 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user }) {
             try {
                 if (!user.email) {
-                    console.error('No email found')
+                    console.error('找不到電子郵件!')
                     return false
                 }
 
-                // 使用正確的 `Users` 表名稱（大小寫要一致）
                 const { data: existingUser, error: selectError } = await supabaseClient
                     .from('Users')
                     .select('id')
@@ -53,12 +50,12 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 if (!existingUser) {
-                    // 如果使用者不存在，則插入新用戶
                     const { error: insertError } = await supabaseClient.from('Users').insert([
                         {
                             email: user.email,
                             name: user.name,
-                            image: user.image
+                            image: user.image, // 🚀 存入 image
+                            bio: '' // 🚀 新用戶的 bio 預設為空
                         }
                     ])
 
@@ -75,19 +72,30 @@ export const authOptions: NextAuthOptions = {
             }
         },
 
-        async session({ session, token }) {
-            if (session?.user) {
-                ;(session as CustomSession).user.id = token.sub || ''
-            }
-            return session
-        },
-
         async jwt({ token, user }) {
-            // 確保 `sub` 被加入到 token
-            if (user?.id) {
-                token.sub = user.id
+            if (user) {
+                token.id = user.id
             }
             return token
+        },
+
+        async session({ session, token }) {
+            if (session?.user) {
+                const { data: userData, error } = await supabaseClient
+                    .from('Users')
+                    .select('id, name, email, image, bio') // 🚀 讀取 bio
+                    .eq('email', session.user.email)
+                    .single()
+
+                if (error) {
+                    console.error('Error fetching user data:', error)
+                } else if (userData) {
+                    ;(session as CustomSession).user.id = userData.id
+                    ;(session as CustomSession).user.image = userData.image
+                    ;(session as CustomSession).user.bio = userData.bio // 🚀 新增 bio
+                }
+            }
+            return session
         }
     }
 }
