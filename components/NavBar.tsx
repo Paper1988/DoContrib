@@ -62,9 +62,6 @@ export default function NavBar() {
                             <Button variant="text" color="info" size="small" href="/contact">
                                 Contact
                             </Button>
-                            <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                                FAQ
-                            </Button>
                         </Box>
                     </Box>
                     <Box
