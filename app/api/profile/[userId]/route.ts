@@ -6,7 +6,11 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+interface Params {
+    userId?: string
+}
+
+export async function GET({ params }: { params: Params }) {
     const { userId } = await params
 
     if (!userId) {

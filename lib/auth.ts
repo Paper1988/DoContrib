@@ -54,8 +54,8 @@ export const authOptions: NextAuthOptions = {
                         {
                             email: user.email,
                             name: user.name,
-                            image: user.image, // 🚀 存入 image
-                            bio: '' // 🚀 新用戶的 bio 預設為空
+                            image: user.image,
+                            bio: ''
                         }
                     ])
 
@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
             if (session?.user) {
                 const { data: userData, error } = await supabaseClient
                     .from('Users')
-                    .select('id, name, email, image, bio') // 🚀 讀取 bio
+                    .select('id, name, email, image, bio')
                     .eq('email', session.user.email)
                     .single()
 
@@ -92,7 +92,7 @@ export const authOptions: NextAuthOptions = {
                 } else if (userData) {
                     ;(session as CustomSession).user.id = userData.id
                     ;(session as CustomSession).user.image = userData.image
-                    ;(session as CustomSession).user.bio = userData.bio // 🚀 新增 bio
+                    ;(session as CustomSession).user.bio = userData.bio
                 }
             }
             return session
