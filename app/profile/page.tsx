@@ -10,8 +10,8 @@ export default function ProfileRedirect() {
     const router = useRouter();
 
     useEffect(() => {
-        if (session?.user?.id) {
-            router.replace(`/profile/${session.user.id}`);
+        if ((session?.user as { id?: string })?.id) {
+            router.replace(`/profile/${(session?.user as { id?: string })?.id}`);
         }
     }, [session, router]);
 
