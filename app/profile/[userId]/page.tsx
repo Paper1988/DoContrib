@@ -7,10 +7,18 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+interface Profile {
+    id: string;
+    name?: string;
+    email?: string;
+    image?: string;
+    bio?: string;
+}
+
 export default function ProfilePage() {
     const { userId } = useParams();
     const { data: session } = useSession();
-    const [profile, setProfile] = useState<{ name: string; email: string; image: string; bio: string } | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
 
     // TipTap 編輯器初始化
     const editor = useEditor({
@@ -32,8 +40,7 @@ export default function ProfilePage() {
         fetchProfile();
     }, [userId, editor]);
 
-    // 🚀 讓用戶只能編輯自己的 profile
-    const isCurrentUser = session?.user?.id === userId;
+    const isCurrentUser = (session?.user as { id?: string })?.id === userId;
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-6">

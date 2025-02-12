@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
         },
 
         async session({ session }) {
-            if (session?.user) {
+            if (session?.user?.email) {
                 const { data: userData, error } = await supabaseClient
                     .from('Users')
                     .select('id, name, email, image, bio')
@@ -95,7 +95,8 @@ export const authOptions: NextAuthOptions = {
                     ;(session as CustomSession).user.bio = userData.bio
                 }
             }
-            return session
+
+            return session as CustomSession
         }
     }
 }
