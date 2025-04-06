@@ -32,7 +32,7 @@ export default function DocumentsPage() {
         })
         const data = await res.json()
         if (res.ok) {
-            router.push(`/editor/${data.document.id}`) // 之後會做這個頁面
+            router.push(`/editor/${data.document.id}`)
         }
     }
 
