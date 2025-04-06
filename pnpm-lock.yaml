@@ -14,6 +14,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@19.1.0)(react@19.1.0))(@types/react@19.1.0)(react@19.1.0)
+      '@liveblocks/client':
+        specifier: ^2.22.3
+        version: 2.22.3
       '@mui/icons-material':
         specifier: ^6.4.10
         version: 6.4.10(@mui/material@6.4.10(@emotion/react@11.14.0(@types/react@19.1.0)(react@19.1.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.1.0)(react@19.1.0))(@types/react@19.1.0)(react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react@19.1.0)(react@19.1.0)
@@ -449,6 +452,12 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@liveblocks/client@2.22.3':
+    resolution: {integrity: sha512-KnOFtaK6A+w+qlmhEF74o4+NQ2bwoGx9xBZUO0ZoI5sSYXsqiIQk40BHPPVraAEtb33VlkecyCiErOq4+BKwvA==}
+
+  '@liveblocks/core@2.22.3':
+    resolution: {integrity: sha512-G0WdcyjVkhvSB6Ud2GGa1Gklps/VbhoiXwv6hjxNqU4AA+UO8D3z6ZfB2vQJdRkuV1+VBvyBilHAi2OA1/t+IA==}
 
   '@mui/core-downloads-tracker@6.4.10':
     resolution: {integrity: sha512-cblGjlM6+xsptwyaALw8RbRIUoqmKxOqLxlk2LkTDhxqUuql1YSOKKLH3w+Yd2QLz28b7MR65sx1OjsRZUfOSQ==}
@@ -3231,6 +3240,12 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@liveblocks/client@2.22.3':
+    dependencies:
+      '@liveblocks/core': 2.22.3
+
+  '@liveblocks/core@2.22.3': {}
 
   '@mui/core-downloads-tracker@6.4.10': {}
 
