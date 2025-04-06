@@ -58,7 +58,7 @@ function BreathingGlow({ size, color, blur }: GlowPoint) {
 				x: `${position.x}vw`,
 				y: `${position.y}vh`,
 				scale: 1,
-				opacity: 1,
+				opacity: 0.2,
 			}}
 			animate={{
 				scale: [1, 1.2, 0.8, 1],

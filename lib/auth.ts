@@ -33,13 +33,13 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user }) {
             try {
-                if (!user.email) {
-                    console.error('找不到電子郵件!')
+                if (!user.id) {
+                    console.error('找不到用戶!')
                     return false
                 }
 
                 const { data: existingUser, error: selectError } = await supabaseClient
-                    .from('Users')
+                    .from('users')
                     .select('id')
                     .eq('email', user.email)
                     .single()
@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 if (!existingUser) {
-                    const { error: insertError } = await supabaseClient.from('Users').insert([
+                    const { error: insertError } = await supabaseClient.from('users').insert([
                         {
                             email: user.email,
                             name: user.name,
@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session }) {
             if (session?.user?.email) {
                 const { data: userData, error } = await supabaseClient
-                    .from('Users')
+                    .from('users')
                     .select('id, name, email, image, bio')
                     .eq('email', session.user.email)
                     .single()

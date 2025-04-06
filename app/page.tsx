@@ -12,7 +12,7 @@ export default function Home() {
 
 	if (status === 'loading') return (
 		<div className="flex flex-col items-center justify-center h-screen relative overflow-auto">
-			<CircularProgress size={70} />
+			<CircularProgress size={70} style={{ color: 'white' }} />
 		</div>
 	)
 	
@@ -46,7 +46,7 @@ export default function Home() {
 					<h1 className="font-bold mb-8 align-middle text-white text-center text-2xl md:text-3xl lg:text-4xl">歡迎使用 DoContrib</h1>
 					<section className="space-y-6 text-white">
 						<div className=''>
-							<h2 className="text-2xl font-semibold mb-4">DoContrib 是什麼？</h2>
+							<h2 className="text-2xl font-semibold mb-4 ease-linear transition-all duration-500 scroll:scale-105">DoContrib 是什麼？</h2>
 							<p>
 								DoContrib 是一個開源的團隊貢獻追蹤和管理平台。我們的目標是幫助團隊更有效地追蹤和管理貢獻，提高團隊協作效率。
 							</p>

@@ -69,16 +69,6 @@ export default function ProfilePage() {
                 ) : (
                     <div className="mt-4" dangerouslySetInnerHTML={{ __html: profile?.bio || '這個人還沒有填寫 Bio。' }} />
                 )}
-
-                {/* 好友邀請按鈕 */}
-                {!isCurrentUser && (
-                    <button 
-                        onClick={() => alert('發送好友邀請！')} 
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md mt-4"
-                    >
-                        發送好友邀請
-                    </button>
-                )}
             </div>
         </div>
     );

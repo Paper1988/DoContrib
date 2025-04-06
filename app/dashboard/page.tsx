@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 
-    // 如果沒有登入，導向到 /login
     if (!session) {
         redirect("/");
     }
