@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Button } from "@mui/material"
 
 export default function EditorPage() {
     const { id } = useParams()
@@ -98,6 +99,10 @@ export default function EditorPage() {
                     刪除文件
                 </button>
             </div>
+
+            <Button variant="outlined" color="error" href="/">
+                返回主頁
+            </Button>
         </div>
     )
 }

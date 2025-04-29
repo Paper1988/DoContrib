@@ -1,3 +1,5 @@
+import { Button } from "@mui/material"
+
 export default function PrivacyPolicy() {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -61,6 +63,9 @@ export default function PrivacyPolicy() {
                     </section>
                 </main>
             </div>
+            <Button variant="outlined" color="error" href="/">
+                返回主頁
+            </Button>
         </div>
     )
 }

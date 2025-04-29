@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useSession } from 'next-auth/react';
@@ -70,6 +70,9 @@ export default function ProfilePage() {
                     <div className="mt-4" dangerouslySetInnerHTML={{ __html: profile?.bio || '這個人還沒有填寫 Bio。' }} />
                 )}
             </div>
+            <Button variant="outlined" color="error" href="/">
+                    返回主頁
+                </Button>
         </div>
     );
 }

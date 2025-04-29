@@ -1,4 +1,5 @@
 "use client";
+
 import { Avatar, Box, Button, IconButton, Menu, Tooltip } from '@mui/material';
 import { signIn, signOut, useSession } from "next-auth/react";
 import { MouseEvent, useState } from 'react';
@@ -20,7 +21,7 @@ export default function LoginButton() {
             {session ? (
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title={session.user?.name}>
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} className='rounded-full'>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, borderRadius: '100%' }}>
                             <Avatar src={session.user?.image ?? ""} />
                         </IconButton>
                     </Tooltip>
