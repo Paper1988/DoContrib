@@ -51,7 +51,7 @@ export default function LoginButton() {
                     </Menu>
                 </Box>
             ) : (
-                <Button variant="outlined" onClick={() => signIn("google")}>使用 Google 登入</Button>
+                <Button variant="outlined" onClick={() => signIn("google")} sx={{ color: "white" }}>使用 Google 登入</Button>
             )}
         </>
     );

@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET! })
 
     // 需要登入的頁面
-    const protectedRoutes = ['/dashboard', '/settings', '/profile']
+    const protectedRoutes = ['/dashboard', '/settings', '/profile', '/documents', '/editor']
 
     if (protectedRoutes.some((path) => req.nextUrl.pathname.startsWith(path))) {
         if (!token) {
@@ -19,5 +19,11 @@ export async function middleware(req: NextRequest) {
 
 // 只在這些路徑下運行 middleware
 export const config = {
-    matcher: ['/dashboard/:path*', '/settings/:path*', '/profile/:path*']
+    matcher: [
+        '/dashboard/:path*',
+        '/settings/:path*',
+        '/profile/:path*',
+        '/documents/:path*',
+        '/editor/:path*'
+    ]
 }

@@ -25,7 +25,7 @@ export function GlowPoints() {
 			color: fixedColors[index % fixedColors.length],
 			blur: "blur-3xl",
 		}));
-		
+
 		setGlowPoints(points);
 	}, []);
 
@@ -39,10 +39,16 @@ export function GlowPoints() {
 }
 
 function BreathingGlow({ size, color, blur }: GlowPoint) {
-	const [position, setPosition] = useState({ x: Math.random() * 100, y: Math.random() * 100 });
+	// 將 position 限制在中央 20%（40vw~60vw、40vh~60vh）
+	const getRandomCentralPosition = () => ({
+		x: 40 + Math.random() * 20, // 40vw ~ 60vw
+		y: 40 + Math.random() * 20, // 40vh ~ 60vh
+	});
+
+	const [position, setPosition] = useState(getRandomCentralPosition());
 
 	const handleAnimationComplete = () => {
-		setPosition({ x: Math.random() * 100, y: Math.random() * 100 });
+		setPosition(getRandomCentralPosition());
 	};
 
 	return (

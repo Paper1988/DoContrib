@@ -10,12 +10,13 @@ export default function CookiesPolicy() {
 
                 <main className="container mx-auto px-4 py-20">
                     <h1 className="text-4xl font-bold mb-8 text-white">Cookie 政策</h1>
-                    
+
                     <section className="space-y-6 text-white">
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">什麼是 Cookie？</h2>
                             <p>
-                                Cookie 是網站儲存在您裝置上的小型文字檔案。這些檔案能協助網站記住您的偏好設定，提供更好的使用體驗。
+                                Cookie
+                                是網站儲存在您裝置上的小型文字檔案。這些檔案能協助網站記住您的偏好設定，提供更好的使用體驗。
                             </p>
                         </div>
 
@@ -31,14 +32,16 @@ export default function CookiesPolicy() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">如何管理 Cookie？</h2>
                             <p>
-                                您可以透過瀏覽器設定來管理或刪除 Cookie。請注意，停用某些 Cookie 可能會影響網站的功能。
+                                您可以透過瀏覽器設定來管理或刪除 Cookie。請注意，停用某些 Cookie
+                                可能會影響網站的功能。
                             </p>
                         </div>
 
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">更新政策</h2>
                             <p>
-                                我們保留隨時更新本 Cookie 政策的權利。重大變更時，我們會在網站上發布通知。
+                                我們保留隨時更新本 Cookie
+                                政策的權利。重大變更時，我們會在網站上發布通知。
                             </p>
                         </div>
                     </section>

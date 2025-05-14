@@ -3,7 +3,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, MenuItem, Toolbar } from "@mui/material";
 import { alpha, styled, Theme } from '@mui/material/styles';
 import * as React from 'react';
-import LoginButton from './GoogleLoginButton';
+import LoginButton from '@/components/GoogleLoginButton';
+import ColorModeIconDropdown from '@/theme/ColorModeIconDropdown'
 
 interface CustomTheme extends Theme {
     vars?: {
@@ -72,13 +73,12 @@ export default function NavBar() {
                         }}
                     >
                         <LoginButton/>
-                        {/* <ColorModeIconDropdown /> */}
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
-                        {/* <ColorModeIconDropdown size="medium" /> */}
                         <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
                             <MenuIcon />
                         </IconButton>
+                        <ColorModeIconDropdown size="medium" />
                         <Drawer
                         anchor="top"
                         open={open}
