@@ -3,32 +3,36 @@
 import { ReactNode } from 'react'
 import { LiveblocksProvider, RoomProvider, ClientSideSuspense } from '@liveblocks/react/suspense'
 import Loading from '@/components/loading'
-import { v4 as uuidv4 } from 'uuid' // 引入 uuid 庫
 
-function getRandomColor() {
-    var letters = '0123456789ABCDEF'
-    var color = '#'
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)]
+async function fetchUsers(userIds: string[]) {
+    if (userIds.length === 0) {
+        return []
     }
-    return color
+
+    try {
+        const response = await fetch(`/api/users?ids=${userIds.join(',')}`)
+        if (!response.ok) {
+            throw new Error('Network response was not ok')
+        }
+
+        const users = await response.json()
+        return users
+    } catch (error) {
+        console.error('Error fetching users:', error)
+        return []
+    }
 }
 
-export function Room({ children }: { children: ReactNode }) {
+export function Room({ children, params }: { children: ReactNode; params: { docId: string } }) {
     return (
         <LiveblocksProvider
             authEndpoint="/api/liveblocks-auth"
             resolveUsers={async ({ userIds }) => {
-                console.log(userIds) // 這裡可以用來檢查傳入的 userIds
-                // 根據 userIds 返回用戶資料
-                return userIds.map((userId) => ({
-                    name: userId, // 假設 userId 是用戶的名稱，根據你的實際情況調整
-                    color: getRandomColor(),
-                    avatar: '', // 預設頭像，根據需要調整
-                }))
+                const users = await fetchUsers(userIds)
+                return users // 返回用戶資料
             }}
         >
-            <RoomProvider id={uuidv4()}>
+            <RoomProvider id={`doc-${params.docId}`} initialPresence={{ cursor: null }}>
                 <ClientSideSuspense fallback={<Loading />}>{children}</ClientSideSuspense>
             </RoomProvider>
         </LiveblocksProvider>

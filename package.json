@@ -1,7 +1,7 @@
 {
     "name": "docontrib",
     "description": "A platform to contribute to open source projects",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "contributors": [
         "Paper1988",
@@ -29,6 +29,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
+        "@hocuspocus/provider": "^3.1.1",
         "@liveblocks/client": "^2.24.2",
         "@liveblocks/node": "^2.24.2",
         "@liveblocks/react": "^2.24.2",
@@ -44,6 +45,7 @@
         "@tiptap/extension-collaboration": "^2.12.0",
         "@tiptap/extension-collaboration-cursor": "^2.12.0",
         "@tiptap/extension-highlight": "^2.12.0",
+        "@tiptap/extension-placeholder": "^2.12.0",
         "@tiptap/extension-task-item": "^2.12.0",
         "@tiptap/extension-task-list": "^2.12.0",
         "@tiptap/pm": "^2.12.0",

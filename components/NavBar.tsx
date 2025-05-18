@@ -1,20 +1,30 @@
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, MenuItem, Toolbar } from "@mui/material";
-import { alpha, styled, Theme } from '@mui/material/styles';
-import * as React from 'react';
-import LoginButton from '@/components/GoogleLoginButton';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import MenuIcon from '@mui/icons-material/Menu'
+import {
+    AppBar,
+    Box,
+    Button,
+    Container,
+    Divider,
+    Drawer,
+    IconButton,
+    MenuItem,
+    Toolbar,
+} from '@mui/material'
+import { alpha, styled, Theme } from '@mui/material/styles'
+import * as React from 'react'
+import LoginButton from '@/components/GoogleLoginButton'
 import ColorModeIconDropdown from '@/theme/ColorModeIconDropdown'
 
 interface CustomTheme extends Theme {
     vars?: {
         palette: {
-            divider: string;
+            divider: string
             background: {
-                defaultChannel: string;
-            };
-        };
-    };
+                defaultChannel: string
+            }
+        }
+    }
 }
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -31,14 +41,14 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
         : alpha(theme.palette.background.default, 0.4),
     boxShadow: (theme as CustomTheme).shadows[1],
     padding: '8px 12px',
-}));
+}))
 
 export default function NavBar() {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(false)
 
     const toggleDrawer = (newOpen: boolean) => () => {
-        setOpen(newOpen);
-    };
+        setOpen(newOpen)
+    }
 
     return (
         <AppBar
@@ -49,7 +59,8 @@ export default function NavBar() {
                 bgcolor: 'transparent',
                 backgroundImage: 'none',
                 mt: 'calc(var(--template-frame-height, 0px) + 50px)',
-            }}>
+            }}
+        >
             <Container maxWidth="lg">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
@@ -67,34 +78,43 @@ export default function NavBar() {
                     </Box>
                     <Box
                         sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        gap: 1,
-                        alignItems: 'center',
+                            display: { xs: 'none', md: 'flex' },
+                            gap: 1,
+                            alignItems: 'center',
                         }}
                     >
-                        <LoginButton/>
+                        <LoginButton />
                     </Box>
-                    <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+                    <Box
+                        sx={{
+                            display: { xs: 'flex', md: 'none' },
+                            flexDirection: 'column',
+                            gap: 1,
+                        }}
+                    >
                         <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
                             <MenuIcon />
                         </IconButton>
                         <ColorModeIconDropdown size="medium" />
                         <Drawer
-                        anchor="top"
-                        open={open}
-                        onClose={toggleDrawer(false)}
-                        PaperProps={{
-                            sx: {
-                            top: 'var(--template-frame-height, 0px)',
-                            },
-                        }}
+                            anchor="top"
+                            open={open}
+                            onClose={toggleDrawer(false)}
+                            slotProps={{
+                                paper: {
+                                    sx: {
+                                        top: 'var(--template-frame-height, 0px)',
+                                    },
+                                },
+                            }}
                         >
                             <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
                                 <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                }}
+                                    sx={{
+                                        flexDirection: 'column',
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                    }}
                                 >
                                     <IconButton onClick={toggleDrawer(false)}>
                                         <CloseRoundedIcon />
@@ -117,7 +137,12 @@ export default function NavBar() {
                                     </Button>
                                 </MenuItem>
                                 <MenuItem>
-                                    <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+                                    <Button
+                                        variant="text"
+                                        color="info"
+                                        size="small"
+                                        sx={{ minWidth: 0 }}
+                                    >
                                         FAQ
                                     </Button>
                                 </MenuItem>
