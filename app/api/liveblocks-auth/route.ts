@@ -1,51 +1,45 @@
-import { Liveblocks } from '@liveblocks/node'
-import { getSupabaseServerClient } from '@/lib/supabase/supabaseClient'
-import { getServerSession, DefaultUser } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { handleAuthError } from '@/lib/utils/auth'
+import { Liveblocks } from '@liveblocks/node'
+import { getServerSession } from 'next-auth'
+import { NextResponse } from 'next/server'
 
 const liveblocks = new Liveblocks({
-    secret: process.env.LIVEBLOCKS_SECRET as string,
+    secret: process.env.LIVEBLOCKS_SECRET!,
 })
 
-interface CustomUser extends DefaultUser {
-    id: string
-    bio: string
-    color: string
-}
-
-async function getUserSession() {
-    const session = await getServerSession(authOptions)
-    if (!session || !session.user) {
-        return null
-    }
-    return session.user
-}
-
 export async function POST(request: Request) {
-    const user = await getUserSession()
-    if (!user) {
-        return new Response('未授權', { status: 401 })
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+        return new NextResponse('Unauthorized', { status: 401 })
     }
 
-    const supabase = await getSupabaseServerClient()
-    const groupIds =
-        (await supabase.from('groups').select('id').eq('owner_id', user.id)).data?.map(
-            (group) => group.id
-        ) || []
+    const { room } = await request.json()
+    if (!room || typeof room !== 'string') {
+        return new Response('缺少房間參數', { status: 400 })
+    }
 
-    const { status, body } = await liveblocks.identifyUser(
-        {
-            userId: user.id,
-            groupIds,
+    const authResult = await handleAuthError()
+    if ('error' in authResult) {
+        return new Response(authResult.error, { status: authResult.status })
+    }
+
+    const user = {
+        id: (session.user as any).id,
+        info: {
+            name: session.user.name || 'Anonymous',
+            email: session.user.email,
+            avatar: session.user.image!,
         },
-        {
-            userInfo: {
-                name: user.name!,
-                avatar: user.image!,
-                color: (user as CustomUser).color,
-            },
-        }
-    )
+    }
+
+    const Session = liveblocks.prepareSession(user.id, {
+        userInfo: user.info,
+    })
+
+    Session.allow(room, Session.FULL_ACCESS)
+    const { body, status } = await Session.authorize()
 
     return new Response(body, { status })
 }

@@ -1,9 +1,9 @@
-import { CircularProgress } from '@mui/material'
+'use client'
 
 export default function Loading() {
     return (
-        <div className="flex flex-col items-center justify-center h-screen relative overflow-auto">
-            <CircularProgress size={70} style={{ color: 'white' }} />
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2"></div>
         </div>
     )
 }

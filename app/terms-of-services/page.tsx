@@ -1,5 +1,3 @@
-import { Button } from "@mui/material"
-
 export default function TOS() {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -12,7 +10,7 @@ export default function TOS() {
 
                 <main className="container mx-auto px-4 py-20">
                     <h1 className="text-4xl font-bold mb-8 text-white">服務條款</h1>
-                    
+
                     <section className="space-y-6 text-white">
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">接受條款</h2>
@@ -61,9 +59,6 @@ export default function TOS() {
                     </section>
                 </main>
             </div>
-            <Button variant="outlined" color="error" href="/">
-                返回主頁
-            </Button>
         </div>
     )
 }

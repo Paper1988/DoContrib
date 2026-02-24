@@ -1,5 +1,3 @@
-import { Button } from "@mui/material"
-
 export default function PrivacyPolicy() {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -12,7 +10,7 @@ export default function PrivacyPolicy() {
 
                 <main className="container mx-auto px-4 py-20">
                     <h1 className="text-4xl font-bold mb-8 text-white">隱私權政策</h1>
-                    
+
                     <section className="space-y-6 text-white">
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">資料收集</h2>
@@ -63,9 +61,6 @@ export default function PrivacyPolicy() {
                     </section>
                 </main>
             </div>
-            <Button variant="outlined" color="error" href="/">
-                返回主頁
-            </Button>
         </div>
     )
 }

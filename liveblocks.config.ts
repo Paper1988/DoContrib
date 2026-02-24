@@ -1,6 +1,5 @@
-import { createClient, LiveObject } from '@liveblocks/client' // ✅ 這邊改對
+import { createClient, LiveObject } from '@liveblocks/client'
 import { createRoomContext } from '@liveblocks/react'
-import { Liveblocks } from '@liveblocks/node'
 
 type Presence = {
     cursor: { x: number; y: number } | null
@@ -8,10 +7,9 @@ type Presence = {
     color: string
 }
 
-// 2. 定義 shared storage 型別（可以先空的）
 export type Storage = {
     doc: LiveObject<{
-        content: string // 或你要儲存的其他資料結構
+        content: string
     }>
 }
 
@@ -26,7 +24,7 @@ type UserMeta = {
 type RoomEvent = never
 
 const client = createClient({
-    authEndpoint: '/api/auth/liveblocks-auth',
+    authEndpoint: '/api/liveblocks-auth',
 })
 
 export const {
@@ -43,6 +41,15 @@ export const {
     useMutation,
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent>(client)
 
-export const liveblocksNode = new Liveblocks({
-    secret: process.env.LIVEBLOCKS_SECRET!,
-})
+declare global {
+    interface Liveblocks {
+        UserMeta: {
+            id: string
+            info: {
+                name?: string
+                avatar?: string
+                color?: string
+            }
+        }
+    }
+}

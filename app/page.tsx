@@ -1,165 +1,236 @@
 'use client'
-import NavBar from '@/components/NavBar'
-import AppTheme from '@/theme/AppTheme'
+
+import Navbar from '@/components/navigation/Navbar'
 import { Alert, CssBaseline } from '@mui/material'
 import { motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
-
-import { GlowPoints } from '@/components/glowPoints'
-import Loading from '@/components/loading'
-
-const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <motion.section
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-lg p-6 md:p-8 shadow-lg space-y-4"
-    >
-        <h2 className="text-3xl font-semibold text-cyan-300 drop-shadow-[0_0_6px_#0ff]">{title}</h2>
-        {children}
-    </motion.section>
-)
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
-    const { status } = useSession()
+	const [isDark, setIsDark] = useState(false)
+	const [isLoaded, setIsLoaded] = useState(false)
 
-    if (status === 'loading') return <Loading />
+	const session = useSession()
+	const router = useRouter()
 
-    return (
-        <motion.div
-            initial={{ opacity: 0.1 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="cursor-default"
-        >
-            <AppTheme>
-                <CssBaseline enableColorScheme />
+	useEffect(() => {
+		// Only run the following code after the component has mounted in the client
+		// This avoids calling setState synchronously inside the effect
+		requestAnimationFrame(() => {
+			setIsLoaded(true)
+			const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+			setIsDark(darkMode)
+		})
+	}, [])
 
-                <Alert
-                    severity="warning"
-                    className="fixed bottom-0 left-0 right-0 z-20 bg-black/40 p-4"
-                >
-                    <p className="text-center">
-                        This is a demo site for DoContrib. It&apos;s a work in progress and not yet
-                        ready for production use. Please don&apos;t use real data.
-                    </p>
-                </Alert>
+	const toggleTheme = () => {
+		setIsDark(!isDark)
+	}
 
-                <NavBar />
-                <div className="flex flex-col items-center justify-center h-screen relative overflow-hidden">
-                    <GlowPoints />
-                    <div className="bg-black/40 backdrop-blur-sm w-full h-full flex flex-col items-center justify-center gap-8 z-10">
-                        <h1 className="font-bold font-geist-sans text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-500 top-4 left-4 hover:scale-105 text-4xl md:text-6xl lg:text-8xl">
-                            DoContrib
-                        </h1>
-                        <div className="text-white text-lg animate-bounce absolute bottom-4">
-                            <span className="animate-bounce fa fa-arrow-down">▼</span>
-                        </div>
-                    </div>
-                </div>
+	const handleSignIn = async () => {
+		if (session.status == 'authenticated') {
+			router.push('/user')
+		} else {
+			try {
+				await signIn('google', { callbackUrl: '/user' })
+			} catch (error) {
+				console.error('Sign in error:', error)
+			}
+		}
+    }
 
-                <div className="w-full bg-main-bg" style={{ height: '20vh' }} />
+	return (
+		<motion.div
+		initial={{ opacity: 0.1 }}
+		animate={{ opacity: 1 }}
+		transition={{ duration: 0.4 }}
+		className={`cursor-default min-h-screen transition-colors duration-300 dark:bg-gray-950 dark:text-white bg-[#fdfbfa] text-gray-900`}
+		>
+			<CssBaseline enableColorScheme />
 
-                <div className="text-white bg-gradient-to-br from-black via-[#0a0a0a] to-[#050505] min-h-screen py-20 px-6">
-                    <div className="max-w-4xl mx-auto space-y-12">
-                        <motion.h1
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="text-5xl md:text-6xl font-bold text-center drop-shadow-[0_0_10px_#0ff]"
-                        >
-                            歡迎使用 <span className="text-cyan-400">DoContrib</span>
-                        </motion.h1>
+			<Navbar isDark={isDark} toggleTheme={toggleTheme} />
+			<div className={`relative min-h-screen flex flex-col items-center justify-center overflow-hidden dark:bg-black/40 bg-linear-to-br`}>
+				<Alert severity="warning" className={`fixed top-16 sm:top-20 left-2 right-2 sm:left-4 sm:right-4 md:left-auto md:right-4 md:max-w-md z-50 dark:bg-black/80 dark:border-yellow-500/50 dark:text-white bg-white/90 border-yellow-400/50 text-gray-900 backdrop-blur-md border rounded-xl shadow-2xl`}>
+					<p className="text-xs sm:text-sm text-gray-900">This is a demo site for DoContrib. It&apos;s a work in progress and not ready for production. Please don&apos;t use real data.</p>
+				</Alert>
 
-                        <div className="space-y-10">
-                            <Card title="DoContrib 是什麼？">
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    DoContrib
-                                    是一個為現代團隊量身打造的協作平台，專注於「貢獻追蹤」、「角色分工」以及「成果視覺化」。
-                                    它不只是專案管理工具，更像是你團隊中的數據分析師與紀錄者，幫你追蹤每位成員的貢獻，避免被動摸魚，也避免積極的人吃悶虧。
-                                </p>
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    無論你是學生小隊、創業團隊還是開源社群，DoContrib
-                                    都能透過任務追蹤、即時圖表與貢獻紀錄，幫助大家清楚知道「誰做了什麼」，
-                                    讓協作更公平、進度更清晰、成果更可控。
-                                </p>
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    我們的目標很簡單：讓合作不再靠感覺，而是用數據說話。
-                                </p>
-                            </Card>
+					<div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center gap-6 sm:gap-8 text-center py-16 sm:py-20 ">
+						<motion.h1
+							initial={{ y: 20, opacity: 0 }}
+							animate={{ y: 0, opacity: 1 }}
+							transition={{ delay: 0.2 }}
+							className={`font-bold font-geist-sans text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl dark:text-white text-gray-900`}
+						>
+							DoContrib
+							</motion.h1>
+					</div>
 
-                            <Card title="我們的使命">
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    在團隊合作中，「資訊不對等」與「責任模糊」一直是效率殺手。DoContrib
-                                    的使命，就是打造一個透明、易用且高互信的空間，
-                                    讓每份努力都有跡可循，讓每個貢獻都被看見。
-                                </p>
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    你專注於完成工作，我們幫你記錄一切；你想了解貢獻比例，我們用圖表替你說明真相。
-                                    沒有過多干擾，沒有繁複流程，只有實用、實在、實話。
-                                </p>
-                            </Card>
+				<div className={`absolute bottom-10 left-1/2 -translate-x-1/2 text-xl animate-bounce z-10 hidden md:block dark:text-white text-gray-900`}>
+					<i className="fa fa-arrow-down">▼</i>
+				</div>
+			</div>
 
-                            <Card title="我們的價值觀">
-                                <ul className="list-disc pl-6 text-lg text-gray-300 space-y-2">
-                                    <li>
-                                        <strong>使用者至上：</strong>
-                                        我們從不假設用戶應該怎麼做，而是傾聽真實需求來設計功能。
-                                    </li>
-                                    <li>
-                                        <strong>開源透明：</strong>
-                                        源碼公開，信任建立於社群與代碼之中，人人都能參與改進。
-                                    </li>
-                                    <li>
-                                        <strong>數據為本：</strong>
-                                        我們相信好的協作必須建立在明確的貢獻紀錄與視覺化資料上。
-                                    </li>
-                                    <li>
-                                        <strong>簡潔不簡單：</strong>
-                                        介面極簡但功能不打折，該有的都有，不該出現的也不會出現。
-                                    </li>
-                                </ul>
-                            </Card>
+			{/* About Section */}
+			<div className={`relative backdrop-blur-sm border-y dark:bg-black/40 dark:border-white/10 bg-[#fdfbfa] border-gray-200`} id="about">
+				<div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 md:py-32">
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className="space-y-12 sm:space-y-16"
+					>
+						<div className="text-center md:text-left">
+							<h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 bg-linear-to-r dark:from-white dark:to-gray-400 from-gray-900 to-gray-600 bg-clip-text text-transparent`}>DoContrib 是什麼？</h2>
+							<div className={`space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed dark:text-gray-300 text-gray-700`}>
+								<p>
+									DoContrib 是一個開源的團隊貢獻追蹤和管理平台。我們的目標是幫助團隊更有效地追蹤和管理貢獻，提高團隊協作效率。
+								</p>
+								<p>我們提供了多種功能，包括貢獻進度追蹤、任務分配、團隊成員管理等，讓您能夠輕鬆地管理團隊，提高工作效率。</p>
+								<p>此外，DoContrib 還提供了詳細的數據分析和報表，讓您能夠更好地了解團隊的工作狀況，做出更明智的決策。</p>
+							</div>
+						</div>
 
-                            <Card title="為什麼選擇 DoContrib？">
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    市面上有不少專案管理工具，但大多不是為「貢獻透明」設計的。DoContrib
-                                    專注於解決團隊合作裡最難說清楚的事──到底誰做了什麼。
-                                </p>
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    我們不只做任務看板，也追蹤每個人實際貢獻；不只是管理工具，更是協作的中立紀錄者。就像
-                                    GitHub 之於程式碼，我們希望成為「團隊協作的歷史見證者」。
-                                </p>
-                                <p className="text-lg text-gray-300 leading-relaxed">
-                                    如果你曾經有過「我到底在幹嘛？」、「他是不是都沒做事？」這些煩惱，那我們應該很適合你。
-                                </p>
-                            </Card>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
+							<div className={`p-6 sm:p-8 rounded-2xl border transition-colors dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 bg-white/80 border-gray-200 hover:bg-white`}>
+								<h2 className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 dark:text-white text-gray-900`}>我們的使命</h2>
+								<p className={`leading-relaxed dark:text-gray-300 text-gray-700`}>
+									我們的使命是讓每個團隊都能更好地追蹤和管理貢獻，提高工作效率，實現更好的團隊合作。
+								</p>
+							</div>
 
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
-                                className="text-center pt-12"
-                            >
-                                <h2 className="text-4xl font-bold text-white drop-shadow-[0_0_6px_#0ff] mb-6">
-                                    準備好提升你們的團隊效率了嗎？
-                                </h2>
-                                <p className="text-lg text-gray-300 mb-8">
-                                    不只是追蹤，更是讓貢獻被看見的工具。現在就試試看吧 👇
-                                </p>
-                                <a
-                                    href="/dashboard"
-                                    className="inline-block px-8 py-3 text-lg font-semibold text-black bg-cyan-400 hover:bg-cyan-300 rounded-full transition shadow-md hover:shadow-cyan-500/50"
-                                >
-                                    前往協作空間
-                                </a>
-                            </motion.div>
-                        </div>
-                    </div>
-                </div>
-            </AppTheme>
-        </motion.div>
-    )
+							<div className={`p-6 sm:p-8 rounded-2xl border transition-colors dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 bg-white/80 border-gray-200 hover:bg-white`}>
+								<h2 className={`text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 dark:text-white text-gray-900`}>我們的價值觀</h2>
+								<ul className="grid grid-cols-1 gap-3">
+									{['用戶至上', '開源透明', '持續創新', '團隊合作'].map((item) => (
+										<li key={item} className={`flex items-center gap-2 dark:text-gray-300 text-gray-700`}>
+											<span className={`w-1.5 h-1.5 rounded-full dark:bg-white bg-gray-900`} />
+											{item}
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+					</motion.div>
+				</div>
+			</div>
+
+			<div className={`py-16 sm:py-24 px-4 sm:px-6 text-center border-t dark:bg-black/60 dark:border-white/10 bg-white border-gray-200`}>
+				<div className="max-w-2xl mx-auto">
+					<h3 className={`text-2xl sm:text-3xl md:text-5xl font-bold mb-6 sm:mb-8 dark:text-white text-gray-900`}>準備好提升團隊效率了嗎？</h3>
+					<p className={`mb-8 sm:mb-10 text-base sm:text-lg dark:text-gray-400 text-gray-600`}>
+						加入數百個使用 DoContrib 的團隊，開始透明化您的協作流程。
+					</p>
+					<button
+						onClick={handleSignIn}
+						className={`w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 rounded-full font-extrabold text-lg sm:text-xl transition-all hover:scale-105 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-gray-200 dark:shadow-[0_0_30px_rgba(255,255,255,0.15)] bg-gray-900 text-white hover:bg-gray-800 shadow-lg`}
+					>
+						現在就免費加入
+					</button>
+				</div>
+			</div>
+
+			<footer
+				className="relative border-t overflow-hidden dark:bg-linear-to-b dark:from-black/80 dark:to-black dark:border-white/10 dark:text-white bg-linear-to-b from-gray-50 to-white border-gray-200 text-gray-900"
+			>
+				<div className="absolute inset-0 pointer-events-none dark:bg-grid-white/[0.02] bg-grid-gray-900/[0.02]" />
+
+				<div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 sm:gap-10 md:gap-12 mb-8 sm:mb-12">
+						<div className="sm:col-span-2">
+							<h3 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 bg-linear-to-r dark:from-white dark:to-gray-400 from-gray-900 to-gray-600 bg-clip-text text-transparent">
+								DoContrib
+							</h3>
+							<p className="text-sm leading-relaxed mb-4 sm:mb-6 max-w-sm dark:text-gray-400 text-gray-600">
+								讓團隊貢獻更透明、協作更高效的開源平台。打造更好的團隊協作體驗。
+							</p>
+							<div className="flex gap-3">
+								{[
+									{ icon: Github, href: 'https://github.com/DoContrib', label: 'GitHub' },
+									{ icon: Twitter, href: '#', label: 'Twitter' },
+									{ icon: Linkedin, href: '#', label: 'LinkedIn' },
+									{ icon: Mail, href: 'mailto:docontrib@gmail.com', label: 'Email' }
+								].map((social) => (
+									<a
+										key={social.label}
+										href={social.href}
+										className="w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 dark:hover:border-white/20 bg-gray-100 border-gray-200 hover:bg-gray-200 hover:border-gray-300 hover:-translate-y-0.5"
+										aria-label={social.label}
+									>
+										<social.icon className="w-5 h-5" />
+									</a>
+								))}
+							</div>
+						</div>
+
+						{[
+							{
+								title: '產品',
+								links: [
+									{ name: '功能', href: '/features' },
+									{ name: '定價', href: '/pricing' },
+									{ name: '更新日誌', href: '/changelog' },
+									{ name: '文件', href: '/docs' }
+								]
+							},
+							{
+								title: '公司',
+								links: [
+									{ name: '關於我們', href: '/about' },
+									{ name: '部落格', href: '/blog' },
+									{ name: '職缺', href: '/jobs' },
+									{ name: '聯絡我們', href: '/contact' }
+								]
+							},
+							{
+								title: '法律',
+								links: [
+									{ name: '隱私權政策', href: '/privacy-policy' },
+									{ name: '服務條款', href: '/terms-of-service' },
+									{ name: 'Cookie 政策', href: '/cookies' }
+								]
+							}
+						].map((section) => (
+							<div
+								key={section.title}
+								className="sm:col-span-1"
+							>
+								<h4 className="font-semibold mb-3 sm:mb-4 dark:text-white text-gray-900">{section.title}</h4>
+								<ul className="space-y-2 sm:space-y-3">
+									{section.links.map((link) => (
+										<li key={link.name}>
+											<a
+												href={link.href}
+												className="text-sm inline-block hover:translate-x-1 transition-transform duration-200 dark:text-gray-400 dark:hover:text-white text-gray-600 hover:text-gray-900"
+											>
+												{link.name}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						))}
+					</div>
+
+					<div className="pt-6 sm:pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 border-gray-200 dark:border-white/10">
+						<p className="text-xs sm:text-sm dark:text-gray-400 text-gray-600">
+							© {new Date().getFullYear()} DoContrib. All rights reserved.
+						</p>
+						<div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm dark:text-gray-400 text-gray-600">
+							<motion.span
+								whileHover={{ scale: 1.05 }}
+								className={`cursor-pointer dark:hover:text-white hover:text-gray-900`}
+							>
+								Made with ❤️ in Taiwan
+							</motion.span>
+						</div>
+					</div>
+				</div>
+
+				<div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent to-transparent dark:via-white/20 via-gray-300" />
+			</footer>
+
+		</motion.div>
+	)
 }

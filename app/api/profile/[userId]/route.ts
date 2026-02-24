@@ -1,47 +1,94 @@
+import { requireAuth } from '@/lib/auth-utils'
+import { getSupabaseAdmin } from '@/lib/supabase/supabaseAdmin'
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseServerClient } from '@/lib/supabase/supabaseClient'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
-    const userId = (await params).userId
-    const supabase = await getSupabaseServerClient()
+	try {
+		const { userId } = await params
 
-    if (!userId) {
-        console.log('Fetching user with userId:', userId)
-        return NextResponse.json({ error: '缺少 userId' }, { status: 400 })
-    }
+		if (!userId) {
+			return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
+		}
 
-    const { data, error } = await supabase
-        .from('users')
-        .select('id, name, email, image, bio, metadata')
-        .eq('id', userId)
-        .limit(1)
+		const supabase = getSupabaseAdmin()
 
-    if (error) {
-        console.log('Error fetching user:', error.message)
-        return NextResponse.json({ error: error.message }, { status: 500 })
-    }
+		const { data: userData, error: userError } = await supabase
+			.from('users')
+			.select('id, name, email, image, bio, created_at')
+			.eq('id', userId)
+			.single()
 
-    if (!data) {
-        return NextResponse.json({ error: '用戶不存在' }, { status: 404 })
-    }
+		if (userError) {
+			if (userError.code === 'PGRST116') {
+				return NextResponse.json({ error: '用戶不存在' }, { status: 404 })
+			}
+			return NextResponse.json({ error: userError.message }, { status: 500 })
+		}
 
-    return NextResponse.json(data[0])
+		const response = {
+			id: userData.id,
+			name: userData.name,
+			email: userData.email,
+			image: userData.image,
+			bio: userData.bio,
+			createdAt: userData.created_at,
+			stats: {
+				projects: 0,
+				groups: 0,
+				completedTasks: 0,
+			},
+		}
+
+		return NextResponse.json(response)
+	} catch (error) {
+		console.error('GET profile error:', error)
+		return NextResponse.json({ error: '內部伺服器錯誤' }, { status: 500 })
+	}
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
-    const userId = (await params).userId
-    const { bio } = await req.json()
-    const supabase = await getSupabaseServerClient()
+	try {
+		const user = await requireAuth()
 
-    if (!userId || !bio) {
-        return NextResponse.json({ error: '缺少 userId 或 bio' }, { status: 400 })
-    }
+		const { userId } = await params
+		const body = await req.json()
+		const { bio } = body
 
-    const { error } = await supabase.from('users').update({ bio }).eq('id', userId)
+		if (!userId) {
+			return NextResponse.json({ error: '缺少 userId' }, { status: 400 })
+		}
 
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-    }
+		if (bio === undefined) {
+			return NextResponse.json({ error: '缺少 bio 欄位' }, { status: 400 })
+		}
 
-    return NextResponse.json({ success: true })
+		if (user.id !== userId) {
+			return NextResponse.json({ error: '未授權：只能編輯自己的個人資料' }, { status: 403 })
+		}
+
+		const supabase = getSupabaseAdmin()
+
+		const { data, error } = await supabase
+			.from('users')
+			.update({ bio })
+			.eq('id', userId)
+			.select()
+			.single()
+
+		if (error) {
+			console.error('❌ Supabase 更新錯誤:', error)
+			if (error.code === 'PGRST116') {
+				return NextResponse.json({ error: '用戶不存在' }, { status: 404 })
+			}
+			return NextResponse.json({ error: error.message }, { status: 500 })
+		}
+
+		return NextResponse.json({ success: true, data })
+	} catch (error) {
+		if (error instanceof Error && error.message === '未登入') {
+			return NextResponse.json({ error: '未登入' }, { status: 401 })
+		}
+		console.error('POST profile error:', error)
+		return NextResponse.json({ error: '內部伺服器錯誤' }, { status: 500 })
+	}
 }

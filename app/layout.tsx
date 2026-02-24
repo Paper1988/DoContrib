@@ -1,7 +1,8 @@
+import { ThemeProvider } from '@/components/theme-provider'
 import '@/style/globals.css'
-import "@liveblocks/react-ui/styles.css";
-import "@liveblocks/react-tiptap/styles.css";
-import { StyledEngineProvider } from '@mui/material'
+import '@liveblocks/react-tiptap/styles.css'
+import '@liveblocks/react-ui/styles.css'
+import '@radix-ui/themes/styles.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
@@ -18,17 +19,29 @@ const geistMono = Geist_Mono({
     subsets: ['latin'],
 })
 
+const title = { default: 'DoContrib', template: '%s - Document & Contribution' }
+const description = '追蹤並管理團隊成員貢獻進度的專業平台，幫助您高效監控專案發展。'
+const url = 'https://docontrib.vercel.app'
+
 export const metadata: Metadata = {
-    title: 'DoContrib',
-    description: '追蹤並管理團隊成員貢獻進度的專業平台，幫助您更有效地監控專案發展。',
+    metadataBase: new URL(url),
+    title,
+    description,
     openGraph: {
-        title: 'DoContrib',
-        description: '追蹤並管理團隊成員貢獻進度的專業平台，幫助您更有效地監控專案發展。',
+        title,
+        description,
         type: 'website',
-        locale: 'zh_TW',
-        url: 'https://docontrib.vercel.app/',
+        locale: 'zh-TW',
+        url,
         siteName: 'DoContrib',
+        images: [
+            {
+                url: 'http://docontrib.vercel.app/DoContrib.jpg',
+                alt: 'DoContrib',
+            },
+        ],
     },
+    authors: [{ name: 'Paper1988' }, { name: 'Njdgee' }],
 }
 
 export default function RootLayout({
@@ -39,9 +52,14 @@ export default function RootLayout({
     return (
         <html lang="zh-TW" suppressHydrationWarning>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <StyledEngineProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
                     <Providers>{children}</Providers>
-                </StyledEngineProvider>
+                </ThemeProvider>
                 <SpeedInsights />
                 <Analytics />
             </body>

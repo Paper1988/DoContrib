@@ -7,7 +7,14 @@ export async function GET(req: NextRequest) {
     const ids = searchParams.get('ids')?.split(',') || []
 
     if (ids.length === 0) {
-        return NextResponse.json({ error: '缺少用戶 ID' }, { status: 400 })
+        const { data, error } = await supabase.from('users').select('id, name, email, image, bio')
+
+        if (error) {
+            console.error('Error fetching users:', error.message)
+            return NextResponse.json({ error: error.message }, { status: 500 })
+        }
+
+        return NextResponse.json(data)
     }
 
     // 查詢用戶資料
