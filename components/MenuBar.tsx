@@ -1,20 +1,20 @@
 'use client'
 
-import React from 'react'
 import { Editor } from '@tiptap/react'
 import {
     Bold,
-    Italic,
-    Strikethrough,
     Code,
     Heading1,
     Heading2,
+    Italic,
     List,
     ListOrdered,
     Quote,
-    Undo,
     Redo,
+    Strikethrough,
+    Undo,
 } from 'lucide-react'
+import React from 'react'
 
 interface MenuBarProps {
     editor: Editor
@@ -22,8 +22,8 @@ interface MenuBarProps {
 
 interface ButtonProps {
     onClick: () => void
-    isActive: boolean
-    disabled: boolean
+    isActive?: boolean
+    disabled?: boolean
     children: React.ReactNode
     title: string
 }
@@ -31,7 +31,7 @@ interface ButtonProps {
 export const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
     if (!editor) return null
 
-    const Button = ({ onClick, isActive, disabled, children, title }: ButtonProps) => (
+    const Button = ({ onClick, isActive = false, disabled = false, children, title }: ButtonProps) => (
         <button
         onClick={onClick}
         disabled={disabled}

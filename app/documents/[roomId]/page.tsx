@@ -9,25 +9,17 @@ import { useEffect, useState } from 'react'
 import { Room } from './Room'
 
 export default function DocumentPage({ params }: { params: Promise<{ documentId: string }> }) {
-    console.log('🚀 DocumentPage 開始渲染')
-
     const router = useRouter()
     const { data: session, status } = useSession()
-
-    console.log('📊 Session 狀態:', { status, hasUser: !!session?.user })
 
     const [documentId, setDocumentId] = useState<string>('')
     const [documentData, setDocumentData] = useState({ title: '', content: '', docId: '' })
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string>('')
 
-    console.log('📝 State:', { documentId, loading, error })
-
     // 解析 params
     useEffect(() => {
-        console.log('🔧 useEffect [params] 執行')
         params.then((resolvedParams) => {
-            console.log('✅ Params 解析完成:', resolvedParams.documentId)
             setDocumentId(resolvedParams.documentId)
         }).catch(err => {
             console.error('❌ Params 解析失敗:', err)
@@ -36,42 +28,28 @@ export default function DocumentPage({ params }: { params: Promise<{ documentId:
 
     // 處理未登入
     useEffect(() => {
-        console.log('🔧 useEffect [status] 執行:', status)
         if (status === 'unauthenticated') {
-            console.log('🔄 重定向到登入頁')
             router.push('/auth/signIn')
         }
     }, [status, router])
 
     // 獲取文件
     useEffect(() => {
-        console.log('🔧 useEffect [fetchDocument] 執行')
-
         async function fetchDocument() {
-            console.log('🔍 fetchDocument 條件:', {
-                status,
-                documentId,
-                hasSession: !!session?.user
-            })
 
             if (status === 'loading' || !documentId) {
-                console.log('⏸️ 等待中... status:', status, 'documentId:', documentId)
                 return
             }
 
             if (!session?.user) {
-                console.log('❌ 無 session')
                 setLoading(false)
                 return
             }
-
-            console.log('📡 開始獲取文件:', documentId)
             setLoading(true)
             setError('')
 
             try {
                 const res = await api.get(`/documents/${documentId}`)
-                console.log('✅ 文件獲取成功:', res.data)
                 const data = res.data.document
                 setDocumentData({
                     title: data.title || '未命名文件',
@@ -83,7 +61,6 @@ export default function DocumentPage({ params }: { params: Promise<{ documentId:
                 console.error('❌ 文件獲取失敗:', error)
                 setError(errorMessage)
             } finally {
-                console.log('🏁 fetchDocument 完成')
                 setLoading(false)
             }
         }
@@ -91,23 +68,18 @@ export default function DocumentPage({ params }: { params: Promise<{ documentId:
         fetchDocument()
     }, [documentId, session, status])
 
-    console.log('🎨 準備渲染, loading:', loading, 'status:', status)
-
     // Loading 狀態
     if (status === 'loading' || !documentId) {
-        console.log('🔄 顯示 Loading (1)')
         return <Loading />
     }
 
     // 未登入（等待重定向）
     if (!session?.user) {
-        console.log('🔄 顯示 Loading (2) - 無 session')
         return <Loading />
     }
 
     // 錯誤狀態
     if (error) {
-        console.log('❌ 顯示錯誤:', error)
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
@@ -127,11 +99,9 @@ export default function DocumentPage({ params }: { params: Promise<{ documentId:
 
     // 載入中
     if (loading) {
-        console.log('🔄 顯示 Loading (3)')
         return <Loading />
     }
 
-    console.log('✨ 渲染 CollaborativeEditor')
     return (
         <Room params={params}>
             <CollaborativeEditor
