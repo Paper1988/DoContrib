@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 import '@/style/globals.css'
 import '@liveblocks/react-tiptap/styles.css'
 import '@liveblocks/react-ui/styles.css'
@@ -60,6 +61,7 @@ export default function RootLayout({
                 >
                     <Providers>{children}</Providers>
                 </ThemeProvider>
+                <Toaster richColors position="top-center" closeButton />
                 <SpeedInsights />
                 <Analytics />
             </body>

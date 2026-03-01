@@ -3,9 +3,18 @@
 import Loading from '@/components/loading'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuShortcut,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import api from '@/lib/api'
+import { showCustomToast } from '@/lib/ui'
 import { Dialog, Switch, Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { Fragment, useEffect, useState } from 'react'
@@ -150,24 +159,67 @@ export default function DocumentsPage() {
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {documents.map((doc) => (
-                            <Card
-                                key={doc.id}
-                                className={`p-4 cursor-pointer border transition-colors ${isDark ? 'bg-gray-900 hover:bg-gray-800 border-gray-700' : 'bg-white hover:bg-gray-50 border-gray-200'}`}
-                                onClick={() => router.push(`/documents/${doc.id}`)}
-                            >
-                                <h3 className="font-semibold mb-2 line-clamp-2">
-                                    {doc.title || '未命名文件'}
-                                </h3>
-                                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                    {new Date(doc.updated_at).toLocaleDateString('zh-TW', {
-                                        year: 'numeric',
-                                        month: '2-digit',
-                                        day: '2-digit',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </p>
-                            </Card>
+                            <ContextMenu key={doc.id}>
+                                <ContextMenuTrigger>
+                                    <Card
+                                        className={`p-4 cursor-pointer border transition-colors ${isDark ? 'bg-gray-900 hover:bg-gray-800 border-gray-700' : 'bg-white hover:bg-gray-50 border-gray-200'}`}
+                                        onClick={() => router.push(`/documents/${doc.id}`)}
+                                    >
+                                        <h3 className="font-semibold mb-2 line-clamp-2">
+                                            {doc.title || '未命名文件'}
+                                        </h3>
+                                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {new Date(doc.updated_at).toLocaleDateString('zh-TW', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </p>
+                                    </Card>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className={`w-56 rounded-xl border ${isDark ? 'bg-gray-950 border-gray-800 text-white' : 'bg-white/80 backdrop-blur-md border-gray-200'}`}>
+                                    <ContextMenuItem
+                                    className="cursor-pointer"
+                                    onSelect={() => router.push(`/documents/${doc.id}`)}
+                                    >
+                                        開啟文件
+                                        <ContextMenuShortcut>⌘O</ContextMenuShortcut>
+                                    </ContextMenuItem>
+
+                                    <ContextMenuItem
+                                    className="cursor-pointer"
+                                    onSelect={() => {
+                                        navigator.clipboard.writeText(`${window.location.origin}/documents/${doc.id}`);
+                                        showCustomToast({
+                                            isDark,
+                                            title: "📄 連結已複製",
+                                            message: `文件「${doc.title}」的連結已存至剪貼簿`,
+                                            duration: 2000,
+                                            type: 'success',
+                                        });
+                                    }}
+                                    >
+                                        複製連結
+                                        <ContextMenuShortcut>⌘C</ContextMenuShortcut>
+                                    </ContextMenuItem>
+
+                                    <ContextMenuSeparator className={isDark ? 'bg-gray-800' : 'bg-gray-100'} />
+
+                                    <ContextMenuItem
+                                    className="text-red-500 focus:text-white focus:bg-red-500 cursor-pointer"
+                                    onSelect={() => {
+                                        if(confirm('確定要刪除嗎？')) {
+                                            api.delete(`/api/documents/${doc.id}`)
+                                        }
+                                    }}
+                                    >
+                                        刪除文件
+                                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
+                                    </ContextMenuItem>
+                                </ContextMenuContent>
+                            </ContextMenu>
                         ))}
                     </div>
                 )}

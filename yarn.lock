@@ -2480,7 +2480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@radix-ui/react-context-menu@npm:2.2.16":
+"@radix-ui/react-context-menu@npm:2.2.16, @radix-ui/react-context-menu@npm:^2.2.16":
   version: 2.2.16
   resolution: "@radix-ui/react-context-menu@npm:2.2.16"
   dependencies:
@@ -7970,6 +7970,7 @@ __metadata:
     "@mui/material": "npm:^7.3.8"
     "@next-auth/supabase-adapter": "npm:^0.2.1"
     "@next/eslint-plugin-next": "npm:16.1.4"
+    "@radix-ui/react-context-menu": "npm:^2.2.16"
     "@radix-ui/react-direction": "npm:^1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.16"
     "@radix-ui/react-label": "npm:^2.1.8"
@@ -8038,6 +8039,7 @@ __metadata:
     server-only: "npm:^0.0.1"
     shadcn: "npm:^3.8.5"
     shiki: "npm:^3.22.0"
+    sonner: "npm:^2.0.7"
     subsink: "npm:^1.0.2"
     superjson: "npm:^2.2.6"
     tailwind-merge: "npm:^3.5.0"
@@ -13900,6 +13902,16 @@ __metadata:
     is-plain-object: "npm:^5.0.0"
     tiny-warning: "npm:^1.0.3"
   checksum: 10c0/90ed1b3c92898ccd4b3cb33216797acfb6eacbc2e60c7b8d8af4f02305195c3832a8cddb4651b10c4beb1da122bfaa42bb748e6464d75c8bfd545f017297041c
+  languageName: node
+  linkType: hard
+
+"sonner@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "sonner@npm:2.0.7"
+  peerDependencies:
+    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10c0/6966ab5e892ed6aab579a175e4a24f3b48747f0fc21cb68c3e33cb41caa7a0eebeb098c210545395e47a18d585eb8734ae7dd12d2bd18c8a3294a1ee73f997d9
   languageName: node
   linkType: hard
 
