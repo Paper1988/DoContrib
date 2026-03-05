@@ -1,12 +1,10 @@
 'use client'
 
 import Loading from '@/app/loading'
-import Navbar from '@/components/navigation/Navbar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import api from '@/lib/api'
-import { cn } from '@/lib/utils'
 import { CssBaseline } from '@mui/material'
 import { easeOut, motion } from 'framer-motion'
 import {
@@ -32,6 +30,9 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import remarkCjkFriendly from "remark-cjk-friendly"
+import remarkEmoji from 'remark-emoji'
+import remarkGemoji from 'remark-gemoji'
 import remarkGfm from 'remark-gfm'
 
 interface Profile {
@@ -351,7 +352,7 @@ export default function ProfilePage() {
                                 <div className={`border rounded-lg p-6 min-h-[200px] ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
                                     {profile.bio ? (
                                         <div className={`prose prose-sm max-w-none ${isDark ? 'prose-invert [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_p]:text-gray-300 [&_li]:text-gray-300 [&_strong]:text-white [&_em]:text-white [&_a]:text-blue-400 [&_code]:text-blue-400 [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10' : '[&_h1]:text-gray-900 [&_h2]:text-gray-900 [&_h3]:text-gray-900 [&_p]:text-gray-700 [&_li]:text-gray-700 [&_strong]:text-gray-900 [&_em]:text-gray-900 [&_a]:text-blue-600 [&_code]:text-blue-600 [&_pre]:bg-gray-100 [&_pre]:border [&_pre]:border-gray-200'}`}>
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]} children={profile.bio} />
+                                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkCjkFriendly, remarkEmoji, remarkGemoji]} children={profile.bio} />
                                         </div>
                                     ) : (
                                         <div className={`text-center py-8 sm:py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
