@@ -1,5 +1,5 @@
-import { requireAuth } from '@/lib/auth-utils'
 import { getSupabaseAdmin } from '@/lib/supabase/supabaseAdmin'
+import { handleAuthError } from '@/lib/auth-utils'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface DocumentUpdate {
@@ -7,22 +7,24 @@ interface DocumentUpdate {
 	content?: string
 }
 
-// 取得單一文件
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const user = await requireAuth()
+		const authResult = await handleAuthError()
+		if ('error' in authResult) {
+			return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+		}
 
 		const { id } = await params
 		if (!id) {
 			return NextResponse.json({ error: '缺少文件 ID' }, { status: 400 })
 		}
 
-		const supabase = getSupabaseAdmin() // 改用 Admin
+		const supabase = getSupabaseAdmin()
 		const { data, error } = await supabase
 			.from('documents')
 			.select('*')
 			.eq('id', id)
-			.eq('owner_id', user.id) // 手動檢查權限
+			.eq('owner_id', authResult.user.id)
 			.single()
 
 		if (error) {
@@ -45,7 +47,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 // 更新文件
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const user = await requireAuth()
+		const authResult = await handleAuthError()
+		if ('error' in authResult) {
+			return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+		}
 
 		const { id } = await params
 		if (!id) {
@@ -65,13 +70,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 		if (title !== undefined) updateData.title = title
 		if (content !== undefined) updateData.content = content
-		updateData.updated_at = new Date().toISOString() // 手動更新時間
+		updateData.updated_at = new Date().toISOString()
 
 		const { data, error } = await supabase
 			.from('documents')
 			.update(updateData)
 			.eq('id', id)
-			.eq('owner_id', user.id) // 手動檢查權限
+			.eq('owner_id', authResult.user.id)
 			.select()
 			.single()
 
@@ -92,18 +97,24 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 	}
 }
 
-// 刪除文件
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const user = await requireAuth()
+		const authResult = await handleAuthError()
+		if ('error' in authResult) {
+			return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+		}
 
 		const { id } = await params
 		if (!id) {
 			return NextResponse.json({ error: '缺少文件 ID' }, { status: 400 })
 		}
 
-		const supabase = getSupabaseAdmin() // 改用 Admin
-		const { error } = await supabase.from('documents').delete().eq('id', id).eq('owner_id', user.id) // 手動檢查權限
+		const supabase = getSupabaseAdmin()
+		const { error } = await supabase
+			.from('documents')
+			.delete()
+			.eq('id', id)
+			.eq('owner_id', authResult.user.id)
 
 		if (error) {
 			if (error.code === 'PGRST116') {

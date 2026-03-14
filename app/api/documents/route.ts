@@ -1,21 +1,17 @@
-import { authOptions } from '@/lib/auth'
 import { getSupabaseAdmin } from '@/lib/supabase/supabaseAdmin'
 import { getSupabaseServerClient } from '@/lib/supabase/supabaseClient'
-import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 async function handleAuthError() {
 	try {
-		const session = await getServerSession(authOptions)
+		const supabase = await getSupabaseServerClient()
+		const { data, error } = await supabase.auth.getClaims()
 
-		if (!session || !session?.user) {
-			console.error('認證錯誤:', {
-				error: '用戶未登入',
-				timestamp: new Date().toISOString(),
-			})
+		if (error || !data?.claims) {
 			return { error: '未登入', status: 401 }
 		}
-		return { user: session.user }
+
+		return { user: { id: data.claims.sub } }
 	} catch (error) {
 		console.error('認證處理錯誤:', {
 			error: error instanceof Error ? error.message : '未知錯誤',
@@ -37,7 +33,7 @@ function validateTitle(title: string): { isValid: boolean; error?: string } {
 
 export async function GET() {
 	try {
-		const supabase = getSupabaseAdmin() // 改用 Admin 客戶端
+		const supabase = getSupabaseAdmin()
 
 		const authResult = await handleAuthError()
 		if ('error' in authResult) {
@@ -48,7 +44,7 @@ export async function GET() {
 		const { data, error } = await supabase
 			.from('documents')
 			.select('*')
-			.eq('owner_id', authResult.user.id) // 只查詢當前用戶的文件
+			.eq('owner_id', authResult.user.id)
 			.order('updated_at', { ascending: false })
 
 		if (error) {
