@@ -10,7 +10,7 @@ type Props = {
 
 export function ToolbarAlignment({ editor }: Props) {
 	return (
-		<div className="flex items-center gap-0.5 px-0.5 py-0.5 rounded-xl dark:bg-white/5 bg-gray-50/50">
+		<div className="flex items-center gap-0.5 px-0.5 py-0.5 rounded-xl dark:bg-white/5 bg-black/5 border dark:border-transparent border-gray-100">
 			<Toolbar.Toggle
 				name="靠左對齊"
 				icon={<AlignLeftIcon className="w-4 h-4" />}

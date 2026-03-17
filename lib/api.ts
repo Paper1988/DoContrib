@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { supabase } from '@/lib/supabase/supabase'
+import axios from 'axios'
 
 const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
@@ -32,7 +32,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
 	(response) => {
-		return response.data
+		return response
 	},
 	(error) => {
 		const status = error.response?.status

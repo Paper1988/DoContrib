@@ -2,18 +2,21 @@
 
 import { LogoIcon } from '@/components/logo'
 import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 export default function SignupPage() {
 	const [loading, setLoading] = useState(false)
+	const searchParams = useSearchParams()
+	const callbackUrl = searchParams.get('callbackUrl') ?? '/user'
 
 	const handleGoogleSignUp = async () => {
 		setLoading(true)
 		try {
-			await signIn('google', { callbackUrl: '/user' })
+			await signIn('google', { callbackUrl })
 		} catch (error) {
 			console.error('Sign up error:', error)
 			setLoading(false)
@@ -57,7 +60,7 @@ export default function SignupPage() {
 							className="group relative w-full h-16 overflow-hidden rounded-[24px] border-2 dark:border-white/10 border-gray-100 bg-white dark:bg-white/5 hover:border-blue-500/50 transition-all duration-500"
 						>
 							{/* 按鈕內部的動態光流 */}
-							<div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+							<div className="absolute inset-0 bg-linear-to-r from-transparent via-blue-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
 
 							<div className="relative flex items-center justify-center gap-4">
 								{loading ? (

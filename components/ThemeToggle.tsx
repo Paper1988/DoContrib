@@ -2,48 +2,46 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SunIcon, MoonIcon } from '@/icons' // 延用你的 icons
+import { useTheme } from 'next-themes'
+import { Sun, Moon } from 'lucide-react'
 
 export function ThemeToggle() {
-	const [theme, setTheme] = useState<'light' | 'dark'>('light')
+	const [mounted, setMounted] = useState(false)
+	const { theme, setTheme } = useTheme()
 
-	useEffect(() => {
-		const savedTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark'
-		if (savedTheme) setTheme(savedTheme)
-	}, [])
+	useEffect(() => setMounted(true), [])
 
-	function changeTheme() {
-		const newTheme = theme === 'light' ? 'dark' : 'light'
-		document.documentElement.setAttribute('data-theme', newTheme)
-		setTheme(newTheme)
-	}
+	if (!mounted) return <div className="w-10 h-10" />
+
+	const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 	return (
 		<motion.button
-			whileHover={{ scale: 1.1 }}
-			whileTap={{ scale: 0.9 }}
-			onClick={changeTheme}
-			className="relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 dark:bg-white/10 bg-black/5 dark:hover:bg-white/20 hover:bg-black/10 border border-transparent dark:hover:border-white/10"
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+			onClick={() => setTheme(isDark ? 'light' : 'dark')}
+			className="relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 dark:bg-white/5 bg-gray-100 dark:hover:bg-white/10 hover:bg-gray-200 border dark:border-white/5 border-gray-200 shadow-sm"
 			aria-label="Switch Theme"
 		>
 			<AnimatePresence mode="wait" initial={false}>
 				<motion.div
-					key={theme}
+					key={isDark ? 'dark' : 'light'}
 					initial={{ y: 10, opacity: 0, rotate: -45 }}
 					animate={{ y: 0, opacity: 1, rotate: 0 }}
 					exit={{ y: -10, opacity: 0, rotate: 45 }}
 					transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-					className="dark:text-white text-black"
+					className="dark:text-white text-gray-700"
 				>
-					{theme === 'dark' ? (
-						<SunIcon style={{ width: '18px' }} />
+					{isDark ? (
+						<Sun className="w-5 h-5" />
 					) : (
-						<MoonIcon style={{ width: '18px' }} />
+						<Moon className="w-5 h-5" />
 					)}
 				</motion.div>
 			</AnimatePresence>
 
-			<div className="absolute inset-0 rounded-xl bg-blue-500/10 blur-lg opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
+			{/* 隱約的發光背景效果 */}
+			<div className="absolute inset-0 rounded-xl bg-blue-500/5 blur-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 		</motion.button>
 	)
 }

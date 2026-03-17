@@ -18,6 +18,7 @@ type UserMeta = {
 	info: {
 		name?: string
 		avatar?: string
+		color?: string
 	}
 }
 
@@ -48,7 +49,7 @@ declare global {
 			info: {
 				name?: string
 				avatar?: string
-				email?: string
+				color?: string
 			}
 		}
 	}

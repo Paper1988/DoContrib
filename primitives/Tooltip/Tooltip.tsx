@@ -21,6 +21,8 @@ export const Tooltip = forwardRef<HTMLDivElement, Props>(
 			disableHoverableContent = true,
 			collisionPadding = 10,
 			sideOffset = 8,
+			side,
+			align,
 			className,
 			...props
 		},
@@ -39,18 +41,20 @@ export const Tooltip = forwardRef<HTMLDivElement, Props>(
 					<RadixTooltip.Portal>
 						<RadixTooltip.Content
 							ref={ref}
+							side={side}
+							align={align}
 							collisionPadding={collisionPadding}
 							sideOffset={sideOffset}
 							className={clsx(
-								'z-[9999] overflow-hidden rounded-lg px-2.5 py-1.5 text-xs font-medium shadow-2xl backdrop-blur-md',
-								'animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 duration-200',
-								'dark:bg-black/80 bg-white/90 dark:text-white/90 text-gray-800 border dark:border-white/10 border-gray-200',
+								'z-9999! overflow-hidden rounded-lg px-2.5 py-1.5 text-xs font-medium shadow-2xl backdrop-blur-md transition-all duration-300',
+								'animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95',
+								'bg-popover text-popover-foreground border border-border',
 								className
 							)}
 							{...props}
 						>
 							{content}
-							<RadixTooltip.Arrow className="dark:fill-white/10 fill-gray-200" />
+							<RadixTooltip.Arrow className="fill-popover" />
 						</RadixTooltip.Content>
 					</RadixTooltip.Portal>
 				</RadixTooltip.Root>
@@ -58,3 +62,5 @@ export const Tooltip = forwardRef<HTMLDivElement, Props>(
 		)
 	}
 )
+
+Tooltip.displayName = 'Tooltip'

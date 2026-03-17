@@ -11,7 +11,6 @@ const supabaseClient = createClient(
 interface CustomUser extends DefaultUser {
 	id: string
 	bio: string
-	color: string
 	metadata: object
 }
 
@@ -33,7 +32,7 @@ export const authOptions: NextAuthOptions = {
 		secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
 	}),
 	pages: {
-		signIn: '/signin',
+		signIn: '/signIn',
 	},
 	callbacks: {
 		async signIn({ user }) {
@@ -61,7 +60,6 @@ export const authOptions: NextAuthOptions = {
 							name: user.name,
 							image: user.image,
 							bio: '',
-							color: '',
 							metadata: {},
 						},
 					])
@@ -90,7 +88,7 @@ export const authOptions: NextAuthOptions = {
 			if (session?.user?.email) {
 				const { data: userData, error } = await supabaseClient
 					.from('users')
-					.select('id, name, email, image, bio, color, metadata')
+					.select('id, name, email, image, bio, metadata')
 					.eq('email', session.user.email)
 					.single()
 
@@ -100,7 +98,6 @@ export const authOptions: NextAuthOptions = {
 					;(session as CustomSession).user.id = userData.id
 					;(session as CustomSession).user.image = userData.image
 					;(session as CustomSession).user.bio = userData.bio
-					;(session as CustomSession).user.color = userData.color
 					;(session as CustomSession).user.metadata = userData.metadata
 				}
 			}

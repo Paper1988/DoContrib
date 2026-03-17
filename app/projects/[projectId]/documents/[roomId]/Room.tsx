@@ -50,7 +50,6 @@ interface RoomProps {
 export function Room({ children, params }: RoomProps) {
 	const [roomId, setRoomId] = useState<string>('')
 
-	// 解析 params Promise
 	useEffect(() => {
 		params.then((resolvedParams) => {
 			setRoomId(resolvedParams.roomId)

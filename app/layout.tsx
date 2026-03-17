@@ -1,13 +1,15 @@
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
-import '@/style/globals.css'
 import '@liveblocks/react-tiptap/styles.css'
 import '@liveblocks/react-ui/styles.css'
 import '@radix-ui/themes/styles.css'
+import '@/style/globals.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { Suspense } from 'react'
+import Loading from './loading'
 import Providers from './providers'
 
 const geistSans = Geist({
@@ -59,7 +61,9 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Providers>{children}</Providers>
+					<Providers>
+						<Suspense fallback={<Loading />}>{children}</Suspense>
+					</Providers>
 				</ThemeProvider>
 				<Toaster richColors position="top-center" closeButton />
 				<SpeedInsights />

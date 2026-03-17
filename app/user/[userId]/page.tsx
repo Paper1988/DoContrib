@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import api from '@/lib/api'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
 	Award,
 	BarChart3,
@@ -15,10 +15,8 @@ import {
 	Home,
 	Mail,
 	PenTool,
-	Target,
-	User,
-	X,
 	Sparkles,
+	User,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -38,21 +36,33 @@ export default function ProfilePage() {
 	const [isEditing, setIsEditing] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [bioText, setBioText] = useState('')
+	const [fetchError, setFetchError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function fetchProfile() {
 			try {
 				const res = await api.get(`/profile/${userId}`)
-				setProfile(res.data)
-				setBioText(res.data.bio || '')
-			} catch (error) {
+				const data = res.data
+				if (!data) throw new Error('API 回傳空資料')
+				setProfile(data)
+				setBioText(data.bio || '')
+			} catch (error: any) {
 				console.error('❌ 獲取用戶資料失敗:', error)
+				setFetchError(error?.response?.data?.error || error?.message || '載入失敗，請重新整理')
 			}
 		}
 		fetchProfile()
 	}, [userId])
 
 	const isCurrentUser = session?.user?.id === userId
+
+	if (fetchError)
+		return (
+			<div className="min-h-screen flex flex-col items-center justify-center gap-4 dark:bg-gray-950">
+				<p className="text-red-500 font-bold text-lg">{fetchError}</p>
+				<p className="text-gray-400 text-sm font-mono">userId: {userId?.toString()}</p>
+			</div>
+		)
 
 	if (!profile) return <Loading />
 
@@ -62,7 +72,6 @@ export default function ProfilePage() {
 			animate={{ opacity: 1 }}
 			className="min-h-screen relative dark:bg-gray-950 bg-[#fdfbfa] transition-colors duration-500 overflow-hidden"
 		>
-			{/* 背景裝飾：網格與光暈 (符合你的規範) */}
 			<div className="fixed inset-0 pointer-events-none">
 				<div className="absolute inset-0 dark:bg-grid-white/[0.02] bg-grid-gray-900/[0.02]" />
 				<div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />

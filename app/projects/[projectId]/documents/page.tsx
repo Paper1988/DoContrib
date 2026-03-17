@@ -8,23 +8,22 @@ import {
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuSeparator,
-	ContextMenuShortcut,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import api from '@/lib/api'
 import { showCustomToast } from '@/lib/ui'
 import {
 	Dialog,
+	DialogPanel,
+	DialogTitle,
 	Switch,
 	Transition,
 	TransitionChild,
-	DialogPanel,
-	DialogTitle,
 } from '@headlessui/react'
-import { useRouter } from 'next/navigation'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ExternalLink, FilePlus, MoreVertical, Share2, Sparkles, Trash2 } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 import { Fragment, useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FilePlus, MoreVertical, Share2, Trash2, ExternalLink, Sparkles } from 'lucide-react'
 
 type Document = {
 	id: string
@@ -33,7 +32,7 @@ type Document = {
 }
 
 export default function DocumentsPage() {
-	const [isDark, setIsDark] = useState(true) // 優先使用 dark 模式視覺
+	const [isDark, setIsDark] = useState(true)
 	const [documents, setDocuments] = useState<Document[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -42,12 +41,24 @@ export default function DocumentsPage() {
 	const [selectedGroupId, setSelectedGroupId] = useState('')
 	const [creating, setCreating] = useState(false)
 	const [isPublic, setIsPublic] = useState(false)
+	const [projectData, setProjectData] = useState<any>(null)
+
 	const router = useRouter()
+	const { projectId } = useParams()
+
+	const fetchProjectData = async () => {
+		try {
+			const res = await api.get(`/projects/${projectId}`)
+			setProjectData(res.data.project)
+		} catch (err: any) {
+			setError(err?.response?.data?.message || '載入專案失敗')
+		}
+	}
 
 	const fetchDocuments = async () => {
 		try {
 			setLoading(true)
-			const res = await api.get('/documents')
+			const res = await api.get(`/projects/documents?projectId=${projectId}`)
 			setDocuments(res.data.documents)
 		} catch (err: any) {
 			setError(err?.response?.data?.message || '載入文件失敗')
@@ -58,7 +69,7 @@ export default function DocumentsPage() {
 
 	const deleteDocument = async (documentId: string) => {
 		try {
-			const res = await api.delete(`/documents/${documentId}`)
+			const res = await api.delete(`/projects/documents/${documentId}?projectId=${projectId}`)
 			if (res.status === 200) {
 				fetchDocuments()
 			}
@@ -74,25 +85,17 @@ export default function DocumentsPage() {
 		}
 
 		try {
-			setCreating(true)
+			setCreating(false)
 			setError(null)
 			await api
-				.post(
-					'/documents',
-					{
-						title: newDocTitle.trim(),
-						group_id: selectedGroupId || null,
-						is_public: isPublic,
-					},
-					{
-						headers: {
-							'Content-Type': 'application/json',
-						},
-					}
-				)
+				.post('/projects/documents', {
+					title: newDocTitle.trim(),
+					projectId: projectId,
+					is_public: isPublic,
+				})
 				.then((res) => {
 					setIsCreateModalOpen(false)
-					router.push(`/documents/${res.data.document.id}`)
+					router.push(`/projects/${projectId}/documents/${res.data.document.id}`)
 				})
 				.catch((error) =>
 					setError(error?.message || error?.response?.data?.message || '創建文件失敗')
@@ -105,15 +108,14 @@ export default function DocumentsPage() {
 	}
 
 	useEffect(() => {
-		fetchDocuments()
-	}, [])
+		if (projectId) fetchDocuments()
+	}, [projectId])
 
-	if (loading)
-		return (
-			<div className="min-h-screen flex items-center justify-center dark:bg-gray-950">
-				<Loading />
-			</div>
-		)
+	useEffect(() => {
+		if (projectId) fetchProjectData()
+	}, [projectId])
+
+	if (loading) return <Loading />
 
 	return (
 		<div className="min-h-screen relative dark:bg-gray-950 bg-[#fdfbfa] transition-colors duration-500 overflow-hidden">
@@ -139,7 +141,7 @@ export default function DocumentsPage() {
 							</span>
 						</motion.div>
 						<h1 className="text-5xl md:text-6xl font-black tracking-tight dark:text-white text-gray-900">
-							我的文件
+							{projectData?.name || '專案文件'}
 						</h1>
 					</div>
 
@@ -157,13 +159,13 @@ export default function DocumentsPage() {
 					</Button>
 				</div>
 
-				{/* Documents Grid */}
 				<AnimatePresence mode="popLayout">
 					{documents.length === 0 ? (
 						<motion.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-							className="text-center py-40 border-2 border-dashed dark:border-white/5 border-gray-200 rounded-[32px]"
+							whileHover={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}
+							className="text-center py-40 border-2 border-dashed dark:border-white/5 border-gray-200 rounded-[32px] transition-colors"
 						>
 							<h3 className="text-2xl font-bold mb-2">這裡空空如也...</h3>
 							<p className="dark:text-gray-500 text-gray-400 mb-8 font-medium">
@@ -182,14 +184,13 @@ export default function DocumentsPage() {
 									<ContextMenu>
 										<ContextMenuTrigger>
 											<Card
-												className="group relative p-8 cursor-pointer rounded-[32px] border transition-all duration-500 dark:bg-white/[0.03] dark:hover:bg-white/[0.08] dark:border-white/10 bg-white/50 hover:bg-white border-gray-200 backdrop-blur-xl hover:shadow-2xl hover:-translate-y-1"
-												onClick={() => router.push(`/documents/${doc.id}`)}
+												className="group relative p-8 cursor-pointer rounded-[32px] border transition-all duration-500 dark:bg-white/3 dark:hover:bg-white/8 dark:border-white/10 bg-white/50 hover:bg-white border-gray-200 backdrop-blur-xl hover:shadow-2xl hover:-translate-y-1"
+												onClick={() => router.push(`/projects/${projectId}/documents/${doc.id}`)}
 											>
 												<div className="flex justify-between items-start mb-6">
 													<div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
 														<Share2 size={24} />
 													</div>
-													<MoreVertical className="opacity-0 group-hover:opacity-40 transition-opacity" />
 												</div>
 												<h3 className="text-xl font-bold mb-3 line-clamp-1 dark:text-white text-gray-900">
 													{doc.title || '未命名文件'}
@@ -198,7 +199,6 @@ export default function DocumentsPage() {
 													{new Date(doc.updated_at).toLocaleDateString('zh-TW')} 更新
 												</p>
 
-												{/* Hover 邊框發光 */}
 												<div className="absolute inset-0 rounded-[32px] border-2 border-blue-500/0 group-hover:border-blue-500/20 transition-all pointer-events-none" />
 											</Card>
 										</ContextMenuTrigger>
@@ -206,7 +206,7 @@ export default function DocumentsPage() {
 										<ContextMenuContent className="w-56 rounded-[20px] border dark:bg-black/80 dark:border-white/10 backdrop-blur-3xl p-2 shadow-3xl">
 											<ContextMenuItem
 												className="rounded-lg gap-2 font-medium py-3 cursor-pointer"
-												onSelect={() => router.push(`/documents/${doc.id}`)}
+												onSelect={() => router.push(`/projects/${projectId}/documents/${doc.id}`)}
 											>
 												<ExternalLink size={16} /> 開啟文件
 											</ContextMenuItem>
@@ -214,7 +214,7 @@ export default function DocumentsPage() {
 												className="rounded-lg gap-2 font-medium py-3 cursor-pointer"
 												onSelect={() => {
 													navigator.clipboard.writeText(
-														`${window.location.origin}/documents/${doc.id}`
+														`${window.location.origin}/projects/${projectId}/documents/${doc.id}`
 													)
 													showCustomToast({
 														isDark,
@@ -247,7 +247,7 @@ export default function DocumentsPage() {
 
 			{/* Create Modal (進化版磨砂感) */}
 			<Transition show={isCreateModalOpen} as={Fragment}>
-				<Dialog as="div" className="relative z-[100]" onClose={() => setIsCreateModalOpen(false)}>
+				<Dialog as="div" className="relative z-100" onClose={() => setIsCreateModalOpen(false)}>
 					<TransitionChild
 						as={Fragment}
 						enter="ease-out duration-300"
