@@ -4455,28 +4455,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-collaboration-cursor@npm:2.26.2":
-  version: 2.26.2
-  resolution: "@tiptap/extension-collaboration-cursor@npm:2.26.2"
-  peerDependencies:
-    "@tiptap/core": ^2.7.0
-    y-prosemirror: ^1.2.11
-  checksum: 10c0/e65abbb9dce6cba9b79dfb618045b71c3f4d622cb682a3cbb5574b6532c8d25cd88044ff401925b8701df57b4205996ccf38a11122a0b4b7f449584b4a7e2a04
-  languageName: node
-  linkType: hard
-
-"@tiptap/extension-collaboration@npm:^3.20.4":
-  version: 3.20.4
-  resolution: "@tiptap/extension-collaboration@npm:3.20.4"
-  peerDependencies:
-    "@tiptap/core": ^3.20.4
-    "@tiptap/pm": ^3.20.4
-    "@tiptap/y-tiptap": ^3.0.2
-    yjs: ^13
-  checksum: 10c0/82c731923a5542730bb5b661104ba8af2f51b300b3d0e75753929f578910ee8dfee6c5b1fad174108e992cdfc429b88f072803aaa574690dd2b80e7e86163d62
-  languageName: node
-  linkType: hard
-
 "@tiptap/extension-document@npm:^3.17.1":
   version: 3.17.1
   resolution: "@tiptap/extension-document@npm:3.17.1"
@@ -8031,8 +8009,6 @@ __metadata:
     "@tailwindcss/typography": "npm:^0.5.19"
     "@tanstack/react-query": "npm:^5.90.21"
     "@tiptap/core": "npm:^3.20.1"
-    "@tiptap/extension-collaboration": "npm:^3.20.4"
-    "@tiptap/extension-collaboration-cursor": "npm:2.26.2"
     "@tiptap/extension-highlight": "npm:^3.20.1"
     "@tiptap/extension-image": "npm:^3.20.1"
     "@tiptap/extension-link": "npm:^3.20.1"
