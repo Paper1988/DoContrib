@@ -29,6 +29,16 @@ import { useTheme } from 'next-themes'
 import { useParams, useRouter } from 'next/navigation'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { Room } from './Room'
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuLabel,
+	ContextMenuRadioGroup,
+	ContextMenuRadioItem,
+	ContextMenuSeparator,
+	ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 
 function useIsMobile() {
 	const [isMobile, setIsMobile] = useState(false)
@@ -303,45 +313,28 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 			<motion.header
 				initial={{ y: -20, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
-				className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-between px-8 backdrop-blur-3xl border-b dark:border-white/5 border-gray-100 dark:bg-black/40 bg-[#fdfbfa]/80"
+				className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-between px-4 sm:px-8 backdrop-blur-3xl border-b dark:border-white/5 border-gray-100 dark:bg-black/40 bg-[#fdfbfa]/80"
 			>
-				<div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0 overflow-hidden">
+				{/* 左側：返回 + 標題 */}
+				<div className="flex items-center gap-2 sm:gap-4 flex-none min-w-0 max-w-[30%] xl:max-w-[20%]">
 					<button
 						onClick={() => router.back()}
 						className="p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:scale-90 shrink-0"
 					>
 						<ArrowLeft className="w-5 h-5 text-gray-500" />
 					</button>
-					<div className="flex flex-col min-w-[80px] overflow-hidden">
+					<div className="min-w-0 overflow-hidden">
 						<EditableTitle initialTitle={documentData.title} roomId={roomId} />
 					</div>
 				</div>
 
-				<div className="flex-initial flex justify-center items-center px-4 max-w-[65vw]">
-					<div className="flex items-center gap-2 sm:gap-4 max-w-full">
-						<StaticToolbar editor={editor} />
-
-						<div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
-						<div className="flex items-center gap-1">
-							{[10, 20, 30].map((m) => (
-								<button
-									key={m}
-									onClick={() => updateMargin(m as any)}
-									className={clsx(
-										'px-3 py-1 rounded-lg text-[10px] font-black transition-all',
-										margin === m
-											? 'dark:text-white text-blue-500'
-											: 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-									)}
-								>
-									{m === 10 ? '窄' : m === 20 ? '中' : '寬'}
-								</button>
-							))}
-						</div>
-					</div>
+				{/* 中間：工具列，flex-1 讓它佔用剩餘空間 */}
+				<div className="flex-1 flex justify-center items-center px-2 sm:px-4 min-w-0 overflow-hidden">
+					<StaticToolbar editor={editor} />
 				</div>
 
-				<div className="flex items-center justify-end gap-2 sm:gap-4 flex-1 min-w-0">
+				{/* 右側：Avatars + Theme + Share */}
+				<div className="flex items-center justify-end gap-1.5 sm:gap-3 flex-none">
 					<div className="scale-75 sm:scale-90 origin-right flex items-center shrink-0">
 						<Avatars />
 					</div>
@@ -366,55 +359,79 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 							}
 						}}
 						className={clsx(
-							'group relative h-10 px-6 rounded-2xl overflow-hidden',
+							'group relative h-9 sm:h-10 px-4 sm:px-6 rounded-2xl overflow-hidden shrink-0',
 							'bg-blue-600 text-white transition-all duration-300',
 							'shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)]',
 							'disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed'
 						)}
 					>
-						{/* 有質感的發光背景 */}
 						<div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-
-						<div className="flex items-center gap-2.5 relative">
+						<div className="flex items-center gap-2 relative">
 							<Share2 className="w-4 h-4 transition-transform group-hover:rotate-12" />
-							<span className="text-xs font-black tracking-widest uppercase">
-								Share
+							{/* 小螢幕隱藏文字，只顯示圖示 */}
+							<span className="hidden sm:inline text-xs font-black tracking-widest uppercase">
+								分享
 							</span>
 						</div>
-
-						{/* 底部高光線 */}
 						<div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
 					</motion.button>
 				</div>
 			</motion.header>
 
-			<main className="pt-32 pb-20 overflow-y-auto no-scrollbar h-screen flex flex-col items-center bg-[#fdfbfa] dark:bg-transparent">
-				<motion.div
-					initial={{ opacity: 0, y: 30, scale: 0.98 }}
-					animate={{
-						opacity: loading ? 0.4 : 1,
-						y: loading ? 30 : 0,
-						scale: loading ? 0.98 : 1,
-						filter: loading ? 'blur(4px)' : 'blur(0px)',
-						padding: `${margin}mm`,
-					}}
-					transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-					className={clsx(
-						'relative z-10 w-[210mm] min-h-[297mm] rounded-sm transition-all duration-700',
-						'bg-white dark:bg-[#0f0f0f] border dark:border-white/10 border-gray-100 shadow-[0_2px_15px_rgba(0,0,0,0.02),0_8px_40px_rgba(0,0,0,0.02)]',
-						loading && 'pointer-events-none'
-					)}
-				>
-					<EditorContent editor={editor} />
-					<FloatingComposer
-						editor={editor}
-						className="z-50 shadow-2xl rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-gray-900/90 bg-white/90 backdrop-blur-xl"
-						style={{ width: 350 }}
-					/>
-					<FloatingThreads threads={threads} editor={editor} />
-				</motion.div>
-				<div className="h-40 w-full" />
-			</main>
+			<ContextMenu>
+				<ContextMenuTrigger asChild>
+					<main className="pt-32 pb-20 overflow-y-auto no-scrollbar h-screen flex flex-col items-center bg-[#fdfbfa] dark:bg-transparent">
+						<motion.div
+							initial={{ opacity: 0, y: 30, scale: 0.98 }}
+							animate={{
+								opacity: loading ? 0.4 : 1,
+								y: loading ? 30 : 0,
+								scale: loading ? 0.98 : 1,
+								filter: loading ? 'blur(4px)' : 'blur(0px)',
+								padding: `${margin}mm`,
+							}}
+							transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+							className={clsx(
+								'relative z-10 w-[210mm] min-h-[297mm] rounded-sm transition-all duration-700',
+								'bg-white dark:bg-[#0f0f0f] border dark:border-white/10 border-gray-100 shadow-[0_2px_15px_rgba(0,0,0,0.02),0_8px_40px_rgba(0,0,0,0.02)]',
+								loading && 'pointer-events-none'
+							)}
+						>
+							<EditorContent editor={editor} />
+							<FloatingComposer
+								editor={editor}
+								className="z-50 shadow-2xl rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-gray-900/90 bg-white/90 backdrop-blur-xl"
+								style={{ width: 350 }}
+							/>
+							<FloatingThreads threads={threads} editor={editor} />
+						</motion.div>
+						<div className="h-40 w-full" />
+					</main>
+				</ContextMenuTrigger>
+
+				<ContextMenuContent className="w-52 rounded-[20px] border dark:bg-black/80 dark:border-white/10 backdrop-blur-3xl p-2 shadow-2xl">
+					<ContextMenuLabel className="text-[10px] font-black tracking-[0.15em] uppercase dark:text-white/30 text-gray-400 px-2 py-1.5">
+						頁面邊距
+					</ContextMenuLabel>
+					<ContextMenuRadioGroup
+						value={String(margin)}
+						onValueChange={(val) => updateMargin(Number(val) as 10 | 20 | 30)}
+					>
+						{([10, 20, 30] as const).map((m) => (
+							<ContextMenuRadioItem
+								key={m}
+								value={String(m)}
+								className="rounded-xl gap-2 font-medium py-2.5 cursor-pointer justify-between"
+							>
+								<span>{m === 10 ? '窄邊距' : m === 20 ? '中邊距' : '寬邊距'}</span>
+								<span className="font-mono text-[11px] dark:text-white/30 text-gray-400">
+									{m}mm
+								</span>
+							</ContextMenuRadioItem>
+						))}
+					</ContextMenuRadioGroup>
+				</ContextMenuContent>
+			</ContextMenu>
 
 			<AnimatePresence>
 				{error && (

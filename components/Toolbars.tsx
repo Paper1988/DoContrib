@@ -70,21 +70,17 @@ export function StaticToolbar({ editor }: Props) {
 	if (!editor) return null
 
 	return (
-		<div className="max-w-full flex lg:justify-center justify-start overflow-x-auto no-scrollbar scroll-smooth">
+		<div className="w-full flex justify-center overflow-x-auto no-scrollbar scroll-smooth">
 			<Toolbar editor={editor} className={clsx(TOOLBAR_STYLING)}>
 				<Toolbar.SectionHistory />
 				<div className={SEPARATOR_STYLING} />
-
 				<ToolbarBlockSelector editor={editor} />
 				<div className={SEPARATOR_STYLING} />
-
 				<Toolbar.SectionInline />
 				<ToolbarInlineAdvanced editor={editor} />
 				<div className={SEPARATOR_STYLING} />
-
 				<ToolbarAlignment editor={editor} />
 				<div className={SEPARATOR_STYLING} />
-
 				<ToolbarMedia editor={editor} />
 			</Toolbar>
 		</div>
