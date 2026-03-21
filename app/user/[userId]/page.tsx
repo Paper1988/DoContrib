@@ -3,11 +3,12 @@
 import Loading from '@/app/loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import api from '@/lib/api'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-	Award,
 	BarChart3,
 	Calendar,
 	Check,
@@ -17,6 +18,9 @@ import {
 	PenTool,
 	Sparkles,
 	User,
+	Shield,
+	Activity,
+	Settings,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -47,7 +51,6 @@ export default function ProfilePage() {
 				setProfile(data)
 				setBioText(data.bio || '')
 			} catch (error: any) {
-				console.error('❌ 獲取用戶資料失敗:', error)
 				setFetchError(error?.response?.data?.error || error?.message || '載入失敗，請重新整理')
 			}
 		}
@@ -58,9 +61,11 @@ export default function ProfilePage() {
 
 	if (fetchError)
 		return (
-			<div className="min-h-screen flex flex-col items-center justify-center gap-4 dark:bg-gray-950">
-				<p className="text-red-500 font-bold text-lg">{fetchError}</p>
-				<p className="text-gray-400 text-sm font-mono">userId: {userId?.toString()}</p>
+			<div className="min-h-screen flex flex-col items-center justify-center gap-4 dark:bg-gray-950 bg-gray-50">
+				<div className="p-8 rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-black/40 bg-white text-center max-w-sm">
+					<p className="text-red-500 font-semibold mb-2">{fetchError}</p>
+					<p className="text-gray-400 text-xs font-mono">userId: {userId?.toString()}</p>
+				</div>
 			</div>
 		)
 
@@ -70,186 +75,301 @@ export default function ProfilePage() {
 		<motion.div
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			className="min-h-screen relative dark:bg-gray-950 bg-[#fdfbfa] transition-colors duration-500 overflow-hidden"
+			className="min-h-screen dark:bg-[#0a0a0a] bg-gray-50 transition-colors duration-300"
 		>
-			<div className="fixed inset-0 pointer-events-none">
-				<div className="absolute inset-0 dark:bg-grid-white/[0.02] bg-grid-gray-900/[0.02]" />
-				<div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
-				<div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 blur-[120px] rounded-full animate-pulse" />
-			</div>
-
-			<main className="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-20">
-				{/* 頂部導航與標題 */}
-				<div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-					<motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-						<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-4">
-							<Sparkles className="w-3 h-3" /> User Identity
-						</div>
-						<h1 className="text-4xl md:text-6xl font-black tracking-tight dark:text-white text-gray-900">
-							{isCurrentUser ? '我的空間' : '探索成員'}
-						</h1>
-					</motion.div>
-
-					<div className="flex items-center gap-3">
-						<Link href="/">
-							<Button variant="ghost" className="rounded-2xl hover:bg-white/10 gap-2 font-bold">
-								<Home className="w-4 h-4" /> 回首頁
-							</Button>
-						</Link>
-						{isCurrentUser && (
-							<Link href={`/user/${userId}/dashboard`}>
-								<Button className="rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-black font-bold shadow-xl hover:scale-105 transition-transform">
-									<BarChart3 className="w-4 h-4 mr-2" /> 儀表板
-								</Button>
-							</Link>
-						)}
-					</div>
+			{/* Top Navbar */}
+			<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-white/90 backdrop-blur-xl flex items-center px-6 gap-4">
+				<div className="w-7 h-7 rounded-full flex items-center justify-center">
+					<Image src="/DoContrib.jpg" alt="Logo" width={32} height={32} className="rounded-full " />
 				</div>
+				<span className="font-bold text-sm dark:text-white text-gray-900">DoContrib</span>
 
-				<div className="space-y-8">
-					{/* 使用者核心資訊卡片 (磨砂玻璃質感) */}
-					<motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-						<Card className="overflow-hidden rounded-[32px] border backdrop-blur-3xl dark:bg-black/40 bg-white/80 dark:border-white/10 border-gray-200 p-8 sm:p-12 shadow-2xl">
-							<div className="flex flex-col md:flex-row items-center gap-10">
-								<div className="relative group">
-									{/* 頭像發光感 */}
-									<div className="absolute inset-0 bg-blue-500/30 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-									<div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-[40px] overflow-hidden ring-4 ring-white/10 shadow-2xl">
-										{profile.image ? (
-											<Image
-												src={profile.image}
-												alt="Avatar"
-												fill
-												className="object-cover transition-transform duration-500 group-hover:scale-110"
+				<Separator orientation="vertical" className="h-5 mx-1 dark:bg-white/10" />
+
+				<nav className="flex items-center gap-1 text-sm flex-1">
+					<Link href="/">
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-8 px-3 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
+						>
+							<Home className="w-3.5 h-3.5" /> 首頁
+						</Button>
+					</Link>
+				</nav>
+
+				{isCurrentUser && (
+					<Link href={`/user/${userId}/dashboard`}>
+						<Button
+							size="sm"
+							className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
+						>
+							<BarChart3 className="w-3.5 h-3.5" /> 儀表板
+						</Button>
+					</Link>
+				)}
+			</header>
+
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+				<div className="flex flex-col lg:flex-row gap-6">
+					{/* ── 左側 Sidebar ── */}
+					<aside className="lg:w-72 shrink-0 space-y-4">
+						{/* 頭像卡 */}
+						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl overflow-hidden">
+							{/* Cover gradient */}
+							<div className="h-20 bg-gradient-to-br from-blue-600/80 via-blue-500/60 to-violet-600/50" />
+							<CardContent className="px-5 pb-5 -mt-10">
+								<div className="relative w-16 h-16 rounded-2xl overflow-hidden ring-4 dark:ring-[#111] ring-white shadow-lg mb-3">
+									{profile.image ? (
+										<Image src={profile.image} alt="Avatar" fill className="object-cover" />
+									) : (
+										<div className="w-full h-full dark:bg-white/5 bg-gray-100 flex items-center justify-center">
+											<User className="w-8 h-8 text-gray-400" />
+										</div>
+									)}
+								</div>
+
+								<div className="flex items-start justify-between gap-2">
+									<div className="min-w-0">
+										<h2 className="font-bold text-base dark:text-white text-gray-900 truncate">
+											{profile.name}
+										</h2>
+										{isCurrentUser && (
+											<Badge className="mt-1 text-[10px] px-2 py-0.5 bg-blue-500/15 text-blue-500 border-blue-500/20 border rounded-full font-semibold tracking-wide">
+												Owner
+											</Badge>
+										)}
+									</div>
+								</div>
+
+								<Separator className="my-4 dark:bg-white/5 bg-gray-100" />
+
+								<div className="space-y-2.5">
+									<div className="flex items-center gap-2.5 text-sm dark:text-gray-400 text-gray-600">
+										<Mail className="w-3.5 h-3.5 shrink-0 dark:text-gray-500 text-gray-400" />
+										<span className="truncate text-xs">{profile.email}</span>
+									</div>
+									{profile.createdAt && (
+										<div className="flex items-center gap-2.5 text-sm dark:text-gray-400 text-gray-600">
+											<Calendar className="w-3.5 h-3.5 shrink-0 dark:text-gray-500 text-gray-400" />
+											<span className="text-xs">
+												加入於{' '}
+												{new Date(profile.createdAt).toLocaleDateString('zh-TW', {
+													year: 'numeric',
+													month: 'long',
+												})}
+											</span>
+										</div>
+									)}
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* 快速統計卡 */}
+						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+							<CardHeader className="px-5 pt-5 pb-3">
+								<CardTitle className="text-xs font-semibold dark:text-gray-400 text-gray-500 uppercase tracking-wider">
+									概覽
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="px-5 pb-5 space-y-3">
+								{[
+									{ icon: Activity, label: '活躍專案', value: profile.projectCount ?? '—' },
+									{ icon: Shield, label: '貢獻次數', value: profile.contributionCount ?? '—' },
+									{ icon: BarChart3, label: '本月活躍', value: profile.monthlyActive ?? '—' },
+								].map(({ icon: Icon, label, value }) => (
+									<div key={label} className="flex items-center justify-between">
+										<div className="flex items-center gap-2 text-sm dark:text-gray-400 text-gray-600">
+											<Icon className="w-3.5 h-3.5 dark:text-gray-500 text-gray-400" />
+											<span className="text-xs">{label}</span>
+										</div>
+										<span className="text-sm font-semibold dark:text-white text-gray-900">
+											{value}
+										</span>
+									</div>
+								))}
+							</CardContent>
+						</Card>
+					</aside>
+
+					{/* ── 右側主內容 ── */}
+					<main className="flex-1 min-w-0">
+						{/* 頁面標題列 */}
+						<div className="flex items-center justify-between mb-6">
+							<div>
+								<h1 className="text-xl font-bold dark:text-white text-gray-900">
+									{isCurrentUser ? '我的個人頁面' : profile.name}
+								</h1>
+								<p className="text-sm dark:text-gray-500 text-gray-500 mt-0.5">
+									{isCurrentUser ? '管理你的個人資料與簡介' : '成員資料'}
+								</p>
+							</div>
+						</div>
+
+						<Tabs defaultValue="bio" className="w-full">
+							<TabsList className="h-9 dark:bg-white/5 bg-gray-100 rounded-xl p-1 mb-6">
+								<TabsTrigger
+									value="bio"
+									className="rounded-lg text-xs font-medium h-7 px-4 data-[state=active]:dark:bg-[#1a1a1a] data-[state=active]:bg-white data-[state=active]:shadow-sm"
+								>
+									<PenTool className="w-3.5 h-3.5 mr-1.5" /> 個人簡介
+								</TabsTrigger>
+								<TabsTrigger
+									value="activity"
+									className="rounded-lg text-xs font-medium h-7 px-4 data-[state=active]:dark:bg-[#1a1a1a] data-[state=active]:bg-white data-[state=active]:shadow-sm"
+								>
+									<Activity className="w-3.5 h-3.5 mr-1.5" /> 近期活動
+								</TabsTrigger>
+								{isCurrentUser && (
+									<TabsTrigger
+										value="settings"
+										className="rounded-lg text-xs font-medium h-7 px-4 data-[state=active]:dark:bg-[#1a1a1a] data-[state=active]:bg-white data-[state=active]:shadow-sm"
+									>
+										<Settings className="w-3.5 h-3.5 mr-1.5" /> 設定
+									</TabsTrigger>
+								)}
+							</TabsList>
+
+							{/* Bio Tab */}
+							<TabsContent value="bio">
+								<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+									<CardHeader className="px-6 pt-6 pb-0 flex flex-row items-center justify-between">
+										<CardTitle className="text-sm font-semibold dark:text-white text-gray-900">
+											個人簡介
+										</CardTitle>
+										{isCurrentUser && (
+											<AnimatePresence mode="wait">
+												{isEditing ? (
+													<motion.div
+														key="editing"
+														initial={{ opacity: 0, scale: 0.95 }}
+														animate={{ opacity: 1, scale: 1 }}
+														exit={{ opacity: 0, scale: 0.95 }}
+														className="flex items-center gap-2"
+													>
+														<Button
+															variant="ghost"
+															size="sm"
+															onClick={() => setIsEditing(false)}
+															className="h-8 px-3 rounded-lg text-xs"
+														>
+															取消
+														</Button>
+														<Button
+															size="sm"
+															onClick={async () => {
+																setIsSaving(true)
+																await api.post(`/profile/${userId}`, { bio: bioText })
+																setProfile({ ...profile, bio: bioText })
+																setIsEditing(false)
+																setIsSaving(false)
+															}}
+															className="h-8 px-3 rounded-lg text-xs bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+														>
+															{isSaving ? (
+																'儲存中...'
+															) : (
+																<>
+																	<Check className="w-3.5 h-3.5" /> 儲存
+																</>
+															)}
+														</Button>
+													</motion.div>
+												) : (
+													<motion.div
+														key="static"
+														initial={{ opacity: 0 }}
+														animate={{ opacity: 1 }}
+													>
+														<Button
+															variant="outline"
+															size="sm"
+															onClick={() => setIsEditing(true)}
+															className="h-8 px-3 rounded-lg text-xs dark:border-white/10 dark:hover:bg-white/5 gap-1.5"
+														>
+															<Edit3 className="w-3.5 h-3.5" /> 編輯
+														</Button>
+													</motion.div>
+												)}
+											</AnimatePresence>
+										)}
+									</CardHeader>
+									<CardContent className="px-6 py-5">
+										{isEditing ? (
+											<textarea
+												value={bioText}
+												onChange={(e) => setBioText(e.target.value)}
+												className="w-full min-h-[260px] p-4 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/8 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono text-sm leading-relaxed resize-none dark:text-white text-gray-900 dark:placeholder:text-gray-600 placeholder:text-gray-400"
+												placeholder="支援 Markdown 語法，寫下你的故事..."
 											/>
 										) : (
-											<div className="w-full h-full bg-gray-200 dark:bg-white/5 flex items-center justify-center">
-												<User className="w-16 h-16 text-gray-400" />
-											</div>
-										)}
-									</div>
-									{isCurrentUser && (
-										<Badge className="absolute -bottom-2 -right-2 bg-blue-500 text-white px-4 py-1 rounded-full border-4 dark:border-gray-950 border-white font-black tracking-widest text-[10px]">
-											OWNER
-										</Badge>
-									)}
-								</div>
-
-								<div className="flex-1 text-center md:text-left">
-									<h2 className="text-3xl md:text-5xl font-black dark:text-white text-gray-900 mb-4">
-										{profile.name}
-									</h2>
-									<div className="space-y-2 flex flex-col items-center md:items-start">
-										<div className="flex items-center gap-3 text-gray-500 dark:text-gray-400 font-medium">
-											<Mail className="w-4 h-4 text-blue-500" /> {profile.email}
-										</div>
-										{profile.createdAt && (
-											<div className="flex items-center gap-3 text-gray-500 dark:text-gray-400 font-medium">
-												<Calendar className="w-4 h-4 text-purple-500" /> 加入於{' '}
-												{new Date(profile.createdAt).toLocaleDateString()}
-											</div>
-										)}
-									</div>
-								</div>
-							</div>
-						</Card>
-					</motion.div>
-
-					{/* 個人簡介編輯區 */}
-					<motion.div
-						initial={{ y: 20, opacity: 0 }}
-						animate={{ y: 0, opacity: 1 }}
-						transition={{ delay: 0.1 }}
-					>
-						<Card className="rounded-[32px] border backdrop-blur-3xl dark:bg-black/20 bg-white/60 dark:border-white/10 border-gray-200 p-8">
-							<div className="flex items-center justify-between mb-8">
-								<h3 className="text-xl font-bold flex items-center gap-3 dark:text-white">
-									<PenTool className="w-5 h-5 text-blue-400" /> 個人簡介
-								</h3>
-								{isCurrentUser && (
-									<div className="flex gap-2">
-										<AnimatePresence mode="wait">
-											{isEditing ? (
-												<motion.div
-													key="editing"
-													initial={{ opacity: 0, scale: 0.9 }}
-													animate={{ opacity: 1, scale: 1 }}
-													exit={{ opacity: 0, scale: 0.9 }}
-													className="flex gap-2"
-												>
-													<Button
-														variant="ghost"
-														onClick={() => setIsEditing(false)}
-														className="rounded-xl"
-													>
-														取消
-													</Button>
-													<Button
-														onClick={async () => {
-															setIsSaving(true)
-															await api.post(`/profile/${userId}`, { bio: bioText })
-															setProfile({ ...profile, bio: bioText })
-															setIsEditing(false)
-															setIsSaving(false)
-														}}
-														className="rounded-xl bg-blue-500 hover:bg-blue-600 text-white gap-2"
-													>
-														{isSaving ? (
-															'儲存中...'
-														) : (
-															<>
-																<Check className="w-4 h-4" /> 儲存
-															</>
+											<div className="min-h-[200px]">
+												{profile.bio ? (
+													<div className="prose prose-sm dark:prose-invert max-w-none dark:prose-p:text-gray-300 prose-p:text-gray-600 prose-headings:font-semibold">
+														<ReactMarkdown
+															remarkPlugins={[
+																remarkGfm,
+																remarkCjkFriendly,
+																remarkEmoji,
+																remarkGemoji,
+															]}
+														>
+															{profile.bio}
+														</ReactMarkdown>
+													</div>
+												) : (
+													<div className="flex flex-col items-center justify-center py-16 text-gray-400">
+														<div className="w-12 h-12 rounded-2xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mb-3">
+															<Sparkles className="w-5 h-5 opacity-40" />
+														</div>
+														<p className="text-sm">這位用戶還沒留下任何簡介。</p>
+														{isCurrentUser && (
+															<Button
+																variant="ghost"
+																size="sm"
+																onClick={() => setIsEditing(true)}
+																className="mt-3 h-8 px-4 rounded-lg text-xs text-blue-500 hover:text-blue-400"
+															>
+																+ 新增簡介
+															</Button>
 														)}
-													</Button>
-												</motion.div>
-											) : (
-												<motion.div
-													key="static"
-													initial={{ opacity: 0, scale: 0.9 }}
-													animate={{ opacity: 1, scale: 1 }}
-												>
-													<Button
-														variant="outline"
-														onClick={() => setIsEditing(true)}
-														className="rounded-xl border-white/10 hover:bg-white/5"
-													>
-														<Edit3 className="w-4 h-4 mr-2" /> 編輯簡介
-													</Button>
-												</motion.div>
-											)}
-										</AnimatePresence>
-									</div>
-								)}
-							</div>
+													</div>
+												)}
+											</div>
+										)}
+									</CardContent>
+								</Card>
+							</TabsContent>
 
-							{isEditing ? (
-								<textarea
-									value={bioText}
-									onChange={(e) => setBioText(e.target.value)}
-									className="w-full min-h-[250px] p-6 rounded-2xl bg-white/5 border-b-2 border-transparent focus:border-blue-500 focus:outline-none transition-all duration-500 font-mono text-sm leading-relaxed"
-									placeholder="支援 Markdown 語法，寫下你的故事..."
-								/>
-							) : (
-								<div className="min-h-[200px] prose dark:prose-invert max-w-none">
-									{profile.bio ? (
-										<ReactMarkdown
-											remarkPlugins={[remarkGfm, remarkCjkFriendly, remarkEmoji, remarkGemoji]}
-										>
-											{profile.bio}
-										</ReactMarkdown>
-									) : (
-										<div className="flex flex-col items-center justify-center py-10 text-gray-500">
-											<Sparkles className="w-8 h-8 mb-4 opacity-20" />
-											<p>這位用戶很神秘，還沒留下任何資訊。</p>
+							{/* Activity Tab */}
+							<TabsContent value="activity">
+								<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+									<CardContent className="px-6 py-16 flex flex-col items-center text-gray-400">
+										<div className="w-12 h-12 rounded-2xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mb-3">
+											<Activity className="w-5 h-5 opacity-40" />
 										</div>
-									)}
-								</div>
+										<p className="text-sm">活動紀錄即將推出</p>
+									</CardContent>
+								</Card>
+							</TabsContent>
+
+							{/* Settings Tab */}
+							{isCurrentUser && (
+								<TabsContent value="settings">
+									<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+										<CardContent className="px-6 py-16 flex flex-col items-center text-gray-400">
+											<div className="w-12 h-12 rounded-2xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mb-3">
+												<Settings className="w-5 h-5 opacity-40" />
+											</div>
+											<p className="text-sm">帳號設定即將推出</p>
+										</CardContent>
+									</Card>
+								</TabsContent>
 							)}
-						</Card>
-					</motion.div>
+						</Tabs>
+					</main>
 				</div>
-			</main>
+			</div>
 		</motion.div>
 	)
 }

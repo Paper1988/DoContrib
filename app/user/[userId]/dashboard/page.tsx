@@ -1,20 +1,33 @@
 'use client'
 
-import { Card } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { supabase } from '@/lib/supabase/supabase'
-import { Avatar } from '@mui/material'
-import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, BarChart3, Home, Layout, LogOut, Settings, Sparkles } from 'lucide-react'
+import {
+	BarChart3,
+	Home,
+	Layout,
+	LogOut,
+	Settings,
+	Sparkles,
+	User,
+	Activity,
+	FolderKanban,
+	ChevronRight,
+} from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 export default function DashboardPage() {
 	const { data: session, status } = useSession()
 	const router = useRouter()
 	const [mounted, setMounted] = useState(false)
-
 	const [stats, setStats] = useState({ projectCount: 0, contributionCount: 0 })
 
 	useEffect(() => {
@@ -52,189 +65,266 @@ export default function DashboardPage() {
 
 	if (!mounted || status === 'loading') return null
 
-	const containerVariants = {
-		hidden: { opacity: 0 },
-		visible: {
-			opacity: 1,
-			transition: { staggerChildren: 0.1 },
-		},
-	}
-
-	const itemVariants = {
-		hidden: { y: 20, opacity: 0 },
-		visible: { y: 0, opacity: 1 },
-	}
+	const firstName = session?.user?.name?.split(' ')[0] ?? '用戶'
 
 	return (
 		<motion.div
-			variants={containerVariants}
-			initial="hidden"
-			animate="visible"
-			className="min-h-screen dark:bg-gray-950 bg-[#fdfbfa] transition-colors duration-500 overflow-x-hidden selection:bg-blue-500/30"
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			className="min-h-screen dark:bg-[#0a0a0a] bg-gray-50 transition-colors duration-300"
 		>
-			{/* 核心網格背景與霓虹光暈 */}
-			<div className="fixed inset-0 pointer-events-none">
-				<div className="absolute inset-0 dark:bg-grid-white/[0.02] bg-grid-gray-900/[0.01]" />
-				<div className="absolute top-0 -left-20 w-[500px] h-[500px] bg-blue-500/10 blur-[120px] rounded-full" />
-				<div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full" />
-			</div>
-
-			<main className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20">
-				{/* Header: 歡迎語 */}
-				<header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
-					<div className="space-y-4">
-						<motion.div
-							variants={itemVariants}
-							className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/5 border border-blue-500/10 text-blue-500 text-[10px] font-bold tracking-[0.2em] uppercase"
-						>
-							<Sparkles className="w-3 h-3" />
-							Synergy Hub v1.0
-						</motion.div>
-						<motion.h1
-							variants={itemVariants}
-							className="text-5xl md:text-7xl font-black tracking-tight dark:text-white text-gray-900"
-						>
-							晚安，{session?.user?.name?.split(' ')[0]}
-						</motion.h1>
-						<motion.p
-							variants={itemVariants}
-							className="text-xl text-gray-500 dark:text-gray-400 font-medium max-w-lg leading-relaxed"
-						>
-							今天想創造些什麼？這裡是你所有想法的發源地。
-						</motion.p>
+			{/* ── Top Navbar ── */}
+			<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-white/90 backdrop-blur-xl flex items-center px-6 gap-4">
+				<div className="flex items-center gap-2">
+					<div className="w-7 h-7 rounded-full flex items-center justify-center">
+						<Image
+							src="/DoContrib.jpg"
+							alt="Logo"
+							width={32}
+							height={32}
+							className="rounded-full"
+						/>
 					</div>
-
-					<motion.button
-						variants={itemVariants}
-						whileHover={{ scale: 1.02, y: -2 }}
-						whileTap={{ scale: 0.98 }}
-						onClick={() => router.push('/projects')}
-						className="group relative h-16 px-10 rounded-[24px] bg-gray-950 dark:bg-white text-white dark:text-black font-black text-lg flex items-center gap-3 shadow-2xl overflow-hidden transition-all"
-					>
-						<div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-						<span className="relative flex items-center gap-2">
-							我的專案看板 <Layout className="w-5 h-5" />
-						</span>
-					</motion.button>
-				</header>
-
-				<div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-					{/* 左側：個人狀態 (4 col) */}
-					<div className="lg:col-span-4 space-y-6">
-						<motion.div variants={itemVariants}>
-							<Card className="p-10 rounded-[32px] border backdrop-blur-3xl dark:bg-black/40 bg-white/80 dark:border-white/10 border-gray-200 overflow-hidden relative">
-								<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-50" />
-								<div className="flex flex-col items-center text-center">
-									<div className="relative group">
-										<div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-										<Avatar
-											sx={{ width: 110, height: 110 }}
-											src={session?.user?.image ?? ''}
-											className="relative ring-4 ring-white dark:ring-white/10 shadow-2xl transition-transform group-hover:scale-105 duration-500"
-										/>
-									</div>
-									<h2 className="mt-8 text-3xl font-black tracking-tight">{session?.user?.name}</h2>
-									<p className="text-sm font-bold text-gray-500 mt-2 tracking-wide">
-										{session?.user?.email}
-									</p>
-
-									<div className="w-full h-px dark:bg-white/10 bg-gray-100 my-8" />
-
-									<div className="grid grid-cols-2 w-full gap-4">
-										<div className="text-center p-5 rounded-[24px] dark:bg-white/5 bg-gray-50/50 border border-transparent dark:hover:border-white/10 transition-colors group">
-											<div className="text-2xl font-black group-hover:text-blue-500 transition-colors">
-												{stats.projectCount}
-											</div>
-											<div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mt-1">
-												Projects
-											</div>
-										</div>
-										<div className="text-center p-5 rounded-[24px] dark:bg-white/5 bg-gray-50/50 border border-transparent dark:hover:border-white/10 transition-colors group">
-											<div className="text-2xl font-black group-hover:text-purple-500 transition-colors">
-												{stats.contributionCount}
-											</div>
-											<div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 mt-1">
-												Contribs
-											</div>
-										</div>
-									</div>
-								</div>
-							</Card>
-						</motion.div>
-
-						<motion.div variants={itemVariants} className="grid grid-cols-1 gap-3">
-							<QuickActionBtn
-								icon={<Home className="w-5 h-5 text-blue-500" />}
-								label="返回首頁"
-								onClick={() => router.push('/')}
-							/>
-							<QuickActionBtn
-								icon={<Settings className="w-5 h-5 text-gray-400" />}
-								label="偏好設定"
-							/>
-							<QuickActionBtn
-								icon={<LogOut className="w-5 h-5 text-red-500" />}
-								label="登出帳號"
-								onClick={() => signOut({ callbackUrl: '/' })}
-								danger
-							/>
-						</motion.div>
-					</div>
-
-					{/* 右側：主要內容區 (8 col) */}
-					<div className="lg:col-span-8 space-y-8">
-						<motion.div variants={itemVariants} className="h-full">
-							<Card className="relative h-full overflow-hidden p-12 rounded-[32px] border dark:bg-black/20 bg-white/40 border-dashed dark:border-white/10 border-gray-300 flex flex-col items-center justify-center text-center min-h-[500px]">
-								<div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.02] to-transparent pointer-events-none" />
-								<div className="relative z-10 flex flex-col items-center">
-									<div className="w-24 h-24 bg-gray-100 dark:bg-white/5 rounded-[32px] flex items-center justify-center mb-8 transform -rotate-6 hover:rotate-0 transition-all duration-700 shadow-xl border dark:border-white/10 border-gray-200">
-										<BarChart3 className="w-12 h-12 text-gray-400" />
-									</div>
-									<h3 className="text-3xl font-black tracking-tight mb-4">數據追蹤系統開發中</h3>
-									<p className="text-gray-500 dark:text-gray-400 max-w-md text-lg leading-relaxed font-medium">
-										我們正在串接實時活動指標，讓你的每一份貢獻都能轉化為視覺化的成長曲線。
-									</p>
-									<div className="mt-10 flex gap-4">
-										<button className="px-8 py-3 rounded-full bg-blue-500/10 text-blue-500 text-sm font-bold tracking-widest uppercase hover:bg-blue-500/20 transition-all">
-											Roadmap
-										</button>
-									</div>
-								</div>
-							</Card>
-						</motion.div>
-					</div>
+					<span className="font-bold text-sm dark:text-white text-gray-900">DoContrib</span>
 				</div>
-			</main>
-		</motion.div>
-	)
-}
 
-function QuickActionBtn({
-	icon,
-	label,
-	onClick,
-	danger = false,
-}: {
-	icon: any
-	label: string
-	onClick?: () => void
-	danger?: boolean
-}) {
-	return (
-		<button
-			onClick={onClick}
-			className={clsx(
-				'flex items-center justify-between px-8 py-5 rounded-[24px] border transition-all duration-300 group shadow-sm',
-				danger
-					? 'dark:border-red-500/20 border-red-100 dark:bg-red-500/5 bg-red-50/30 hover:bg-red-500 text-red-500 hover:text-white'
-					: 'dark:bg-white/5 bg-white/60 border-transparent hover:border-gray-200 dark:hover:border-white/10 dark:hover:bg-white/10 backdrop-blur-md'
-			)}
-		>
-			<div className="flex items-center gap-4 font-black tracking-tight text-lg">
-				<span className="transition-transform group-hover:scale-110 duration-300">{icon}</span>
-				{label}
+				<Separator orientation="vertical" className="h-5 mx-1 dark:bg-white/10" />
+
+				<nav className="flex items-center gap-1 flex-1">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => router.push('/')}
+						className="h-8 px-3 rounded-lg text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
+					>
+						<Home className="w-3.5 h-3.5" /> 首頁
+					</Button>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => router.push('/projects')}
+						className="h-8 px-3 rounded-lg text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
+					>
+						<FolderKanban className="w-3.5 h-3.5" /> 專案
+					</Button>
+				</nav>
+
+				{/* 右側 avatar */}
+				<Avatar
+					className="w-7 h-7 cursor-pointer"
+					onClick={() => router.push(`/user/${session?.user?.id}`)}
+				>
+					<AvatarImage src={session?.user?.image ?? ''} />
+					<AvatarFallback className="text-xs bg-blue-500/20 text-blue-500 font-semibold">
+						{firstName[0]}
+					</AvatarFallback>
+				</Avatar>
+			</header>
+
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+				<div className="flex flex-col lg:flex-row gap-6">
+					{/* ── 左側 Sidebar ── */}
+					<aside className="lg:w-72 shrink-0 space-y-4">
+						{/* 用戶卡 */}
+						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl overflow-hidden">
+							<div className="h-16 bg-gradient-to-br from-blue-600/80 via-blue-500/60 to-violet-600/50" />
+							<CardContent className="px-5 pb-5 -mt-8">
+								<Avatar className="w-14 h-14 ring-4 dark:ring-[#111] ring-white shadow-lg mb-3">
+									<AvatarImage src={session?.user?.image ?? ''} />
+									<AvatarFallback className="text-lg bg-blue-500/20 text-blue-500 font-bold">
+										{firstName[0]}
+									</AvatarFallback>
+								</Avatar>
+
+								<div className="flex items-start justify-between gap-2 mb-1">
+									<div className="min-w-0">
+										<h2 className="font-bold text-sm dark:text-white text-gray-900 truncate">
+											{session?.user?.name}
+										</h2>
+										<p className="text-xs dark:text-gray-500 text-gray-400 truncate mt-0.5">
+											{session?.user?.email}
+										</p>
+									</div>
+									<Badge className="shrink-0 text-[10px] px-2 py-0.5 bg-blue-500/15 text-blue-500 border-blue-500/20 border rounded-full font-semibold">
+										Pro
+									</Badge>
+								</div>
+
+								<Separator className="my-4 dark:bg-white/5 bg-gray-100" />
+
+								{/* 統計 */}
+								<div className="grid grid-cols-2 gap-3">
+									{[
+										{ label: 'Projects', value: stats.projectCount },
+										{ label: 'Contribs', value: stats.contributionCount },
+									].map(({ label, value }) => (
+										<div
+											key={label}
+											className="text-center p-3 rounded-xl dark:bg-white/5 bg-gray-50 border dark:border-white/5 border-gray-100"
+										>
+											<p className="text-base font-bold dark:text-white text-gray-900">{value}</p>
+											<p className="text-[10px] uppercase tracking-wider dark:text-gray-500 text-gray-400 font-medium mt-0.5">
+												{label}
+											</p>
+										</div>
+									))}
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* 導覽選單 */}
+						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+							<CardContent className="p-2">
+								<nav className="space-y-0.5">
+									{[
+										{
+											icon: BarChart3,
+											label: '儀表板',
+											active: true,
+											onClick: undefined,
+										},
+										{
+											icon: FolderKanban,
+											label: '我的專案',
+											onClick: () => router.push('/projects'),
+										},
+										{
+											icon: User,
+											label: '個人頁面',
+											onClick: () => router.push(`/user/${session?.user?.id}`),
+										},
+										{
+											icon: Activity,
+											label: '活動紀錄',
+											onClick: undefined,
+											soon: true,
+										},
+										{
+											icon: Settings,
+											label: '偏好設定',
+											onClick: undefined,
+											soon: true,
+										},
+									].map(({ icon: Icon, label, active, onClick, soon }) => (
+										<button
+											key={label}
+											onClick={onClick}
+											disabled={soon}
+											className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
+												active
+													? 'dark:bg-white/10 bg-gray-100 dark:text-white text-gray-900'
+													: soon
+														? 'opacity-40 cursor-not-allowed dark:text-gray-500 text-gray-400'
+														: 'dark:text-gray-400 text-gray-600 dark:hover:bg-white/5 hover:bg-gray-50 dark:hover:text-white hover:text-gray-900'
+											}`}
+										>
+											<Icon className={`w-4 h-4 shrink-0 ${active ? 'text-blue-500' : ''}`} />
+											<span className="flex-1 text-left">{label}</span>
+											{soon && (
+												<Badge className="text-[9px] px-1.5 py-0 dark:bg-white/5 bg-gray-100 dark:text-gray-500 text-gray-400 border-0 font-medium rounded-md">
+													soon
+												</Badge>
+											)}
+											{!active && !soon && (
+												<ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity dark:text-gray-500 text-gray-400" />
+											)}
+										</button>
+									))}
+								</nav>
+
+								<Separator className="my-2 dark:bg-white/5 bg-gray-100" />
+
+								<button
+									onClick={() => signOut({ callbackUrl: '/' })}
+									className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 dark:hover:bg-red-500/10 hover:bg-red-50 transition-all duration-150 group"
+								>
+									<LogOut className="w-4 h-4 shrink-0" />
+									<span className="flex-1 text-left">登出帳號</span>
+								</button>
+							</CardContent>
+						</Card>
+					</aside>
+
+					{/* ── 右側主內容 ── */}
+					<main className="flex-1 min-w-0 space-y-6">
+						{/* 歡迎標題列 */}
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+							<div>
+								<h1 className="text-xl font-bold dark:text-white text-gray-900">
+									晚安，{firstName} 👋
+								</h1>
+								<p className="text-sm dark:text-gray-500 text-gray-500 mt-0.5">
+									今天想創造些什麼？
+								</p>
+							</div>
+							<Button
+								onClick={() => router.push('/projects')}
+								className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-2 shadow-sm self-start sm:self-auto"
+							>
+								<Layout className="w-3.5 h-3.5" /> 我的專案看板
+							</Button>
+						</div>
+
+						{/* 快速統計卡 */}
+						<div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+							{[
+								{
+									label: '參與專案',
+									value: stats.projectCount,
+									icon: FolderKanban,
+									color: 'text-blue-500',
+								},
+								{
+									label: '貢獻次數',
+									value: stats.contributionCount,
+									icon: Activity,
+									color: 'text-violet-500',
+								},
+								{ label: '本月活躍', value: '—', icon: BarChart3, color: 'text-emerald-500' },
+							].map(({ label, value, icon: Icon, color }) => (
+								<Card
+									key={label}
+									className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl"
+								>
+									<CardContent className="p-5">
+										<div className="flex items-center justify-between mb-3">
+											<p className="text-xs font-medium dark:text-gray-500 text-gray-500">
+												{label}
+											</p>
+											<Icon className={`w-4 h-4 ${color}`} />
+										</div>
+										<p className="text-2xl font-bold dark:text-white text-gray-900">{value}</p>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+
+						{/* 主要空白區域（數據追蹤 Coming Soon） */}
+						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl">
+							<CardHeader className="px-6 pt-6 pb-0">
+								<CardTitle className="text-sm font-semibold dark:text-white text-gray-900 flex items-center gap-2">
+									<BarChart3 className="w-4 h-4 text-blue-500" />
+									活動總覽
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="px-6 py-16 flex flex-col items-center text-center">
+								<div className="w-12 h-12 rounded-2xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mb-3">
+									<BarChart3 className="w-5 h-5 dark:text-gray-600 text-gray-400" />
+								</div>
+								<p className="text-sm font-medium dark:text-gray-400 text-gray-500 mb-1">
+									數據追蹤系統開發中
+								</p>
+								<p className="text-xs dark:text-gray-600 text-gray-400 max-w-xs leading-relaxed">
+									我們正在串接實時活動指標，讓你的每一份貢獻都能轉化為視覺化的成長曲線。
+								</p>
+								<button className="mt-5 px-4 py-2 rounded-lg dark:bg-white/5 bg-gray-100 text-xs font-semibold dark:text-gray-400 text-gray-500 dark:hover:bg-white/10 hover:bg-gray-200 transition-colors">
+									查看 Roadmap
+								</button>
+							</CardContent>
+						</Card>
+					</main>
+				</div>
 			</div>
-			<ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
-		</button>
+		</motion.div>
 	)
 }

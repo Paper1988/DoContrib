@@ -86,7 +86,6 @@ export function Room({ children, params }: RoomProps) {
 		[]
 	)
 
-	// 等待 documentId 解析完成
 	if (!roomId) {
 		return <Loading />
 	}

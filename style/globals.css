@@ -9,6 +9,53 @@
 	transition-duration: 200ms;
 }
 
+@layer components {
+	.accent-blue-500 {
+		accent-color: #3b82f6;
+	}
+	.accent-purple-500 {
+		accent-color: #a855f7;
+	}
+
+	/* 讓原生 Slider 稍微好看一點的微調 */
+	input[type='range'] {
+		@apply cursor-pointer transition-all duration-300;
+	}
+
+	input[type='range']::-webkit-slider-runnable-track {
+		@apply rounded-full;
+	}
+}
+
+/* 讓編輯器更像一個有機體 */
+.tiptap-notion-flow .tiptap {
+	@apply outline-none text-lg leading-relaxed;
+}
+
+/* 針對 Notion 風格的 Placeholder 優化 */
+.tiptap p.is-editor-empty:first-child::before {
+	content: attr(data-placeholder);
+	float: left;
+	color: #adb5bd;
+	pointer-events: none;
+	height: 0;
+	@apply font-medium transition-opacity duration-300;
+}
+
+/* 讓圖片與 YouTube 嵌入更美觀 */
+.tiptap img {
+	@apply rounded-[24px] border dark:border-white/10 border-gray-200 shadow-xl my-8 max-w-full;
+}
+
+.tiptap iframe {
+	@apply rounded-[24px] border dark:border-white/10 border-gray-200 shadow-2xl my-8 w-full aspect-video;
+}
+
+/* 針對你的 Z-Gen Design: 選取文字時的霓虹感 */
+.tiptap ::selection {
+	@apply bg-blue-500/30 text-blue-100;
+}
+
 /* 游標本體 */
 .collaboration-cursor__caret {
 	position: relative;
@@ -20,7 +67,7 @@
 	margin-left: -1px;
 	margin-right: -1px;
 	pointer-events: none;
-/* 霓虹發光感 */
+	/* 霓虹發光感 */
 	filter: drop-shadow(0 0 6px currentColor);
 	transition: all 0.2s ease;
 }
@@ -41,7 +88,7 @@
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 
-/* 磨砂玻璃效果 */
+	/* 磨砂玻璃效果 */
 	backdrop-filter: blur(12px);
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -164,12 +211,15 @@
 }
 
 /* Liveblocks Toolbar & Tooltip Dark Mode Overrides */
-.lb-tiptap-toolbar, .lb-tiptap-floating-toolbar {
+.lb-tiptap-toolbar,
+.lb-tiptap-floating-toolbar {
 	background-color: transparent !important;
 	border: none !important;
 }
 
-[role='tooltip'], .lb-tooltip, .lb-tiptap-suggestions {
+[role='tooltip'],
+.lb-tooltip,
+.lb-tiptap-suggestions {
 	z-index: 99999 !important;
 }
 

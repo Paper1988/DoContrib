@@ -23,7 +23,16 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import debounce from 'lodash/debounce'
-import { AlertTriangle, ArrowLeft, Monitor, Share2 } from 'lucide-react'
+import {
+	AlertTriangle,
+	ArrowLeft,
+	Monitor,
+	Share2,
+	Layout,
+	Type,
+	AlignLeft,
+	Trash2,
+} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useParams, useRouter } from 'next/navigation'
@@ -33,9 +42,6 @@ import {
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
-	ContextMenuLabel,
-	ContextMenuRadioGroup,
-	ContextMenuRadioItem,
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
@@ -203,25 +209,32 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 	const [projectData, setProjectData] = useState<Project | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string>('')
-	const [margin, setMargin] = useState<10 | 20 | 30>(20)
+	const [fontSize, setFontSize] = useState(18) // 預設 18px
+	const [lineHeight, setLineHeight] = useState(1.6) // 預設 1.6
+	const [isFullWidth, setIsFullWidth] = useState(false) // 全寬模式
+
+	const editorStyle = {
+		'--editor-font-size': `${fontSize}px`,
+		'--editor-line-height': lineHeight,
+		'--editor-max-width': isFullWidth ? '100%' : '850px', // Notion 的黃金閱讀寬度是 850px
+	} as React.CSSProperties
 
 	const [saveStatus, setSaveStatus] = useState<'已同步' | '儲存中' | '錯誤'>('已同步')
 
 	const debouncedSave = useCallback(
-		debounce(async (content: any) => {
+		debounce(async (content: any, settings: any) => {
 			setSaveStatus('儲存中')
 			try {
 				await api.patch(`/projects/documents/${roomId}`, {
-					content: content,
-					settings: { margin: margin },
+					content,
+					settings,
 				})
 				setSaveStatus('已同步')
 			} catch (err) {
-				console.error('Autosave failed:', err)
 				setSaveStatus('錯誤')
 			}
 		}, 1500),
-		[roomId, margin]
+		[roomId]
 	)
 
 	const editor = useEditor({
@@ -257,10 +270,16 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 			Youtube,
 		],
 		onUpdate: ({ editor }) => {
-			const json = editor.getJSON()
-			debouncedSave(json)
+			setSaveStatus('儲存中')
 		},
 	})
+
+	useEffect(() => {
+		if (!editor || loading) return
+
+		const content = editor.getJSON()
+		debouncedSave(content, { fontSize, lineHeight, isFullWidth })
+	}, [editor, fontSize, lineHeight, isFullWidth, debouncedSave, loading])
 
 	useEffect(() => {
 		async function fetchData() {
@@ -277,9 +296,11 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 					content: docData.content || '',
 				})
 
-				// 從伺服器載入邊距設定
-				if (docData.settings?.margin) {
-					setMargin(docData.settings.margin)
+				if (docData.settings) {
+					const { fontSize: fs, lineHeight: lh, isFullWidth: fw } = docData.settings
+					if (fs) setFontSize(fs)
+					if (lh) setLineHeight(lh)
+					if (fw !== undefined) setIsFullWidth(fw)
 				}
 
 				const projectsList = projRes.data.projects
@@ -292,18 +313,7 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 			}
 		}
 		fetchData()
-	}, [roomId, projectId])
-
-	const updateMargin = async (newMargin: 10 | 20 | 30) => {
-		setMargin(newMargin)
-		try {
-			await api.patch(`/projects/documents/${roomId}`, {
-				settings: { margin: newMargin },
-			})
-		} catch (error) {
-			console.error('儲存邊距設定失敗:', error)
-		}
-	}
+	}, [roomId, projectId, session?.user])
 
 	return (
 		<>
@@ -380,56 +390,113 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 
 			<ContextMenu>
 				<ContextMenuTrigger asChild>
-					<main className="pt-32 pb-20 overflow-y-auto no-scrollbar h-screen flex flex-col items-center bg-[#fdfbfa] dark:bg-transparent">
+					<main
+						style={editorStyle}
+						className="pt-32 pb-20 overflow-y-auto no-scrollbar h-screen flex flex-col items-center bg-transparent"
+					>
+						<div className="w-auto h-5 shrink-0" />
 						<motion.div
-							initial={{ opacity: 0, y: 30, scale: 0.98 }}
+							initial={{ opacity: 0, y: 10 }}
 							animate={{
 								opacity: loading ? 0.4 : 1,
-								y: loading ? 30 : 0,
-								scale: loading ? 0.98 : 1,
-								filter: loading ? 'blur(4px)' : 'blur(0px)',
-								padding: `${margin}mm`,
+								y: loading ? 20 : 0,
+								filter: loading ? 'blur(8px)' : 'blur(0px)',
 							}}
-							transition={{ type: 'spring', stiffness: 100, damping: 20 }}
 							className={clsx(
-								'relative z-10 w-[210mm] min-h-[297mm] rounded-sm transition-all duration-700',
-								'bg-white dark:bg-[#0f0f0f] border dark:border-white/10 border-gray-100 shadow-[0_2px_15px_rgba(0,0,0,0.02),0_8px_40px_rgba(0,0,0,0.02)]',
-								loading && 'pointer-events-none'
+								'relative z-10 transition-all duration-500 ease-in-out py-16 md:py-24',
+								'bg-transparent'
 							)}
+							style={{
+								width: 'var(--editor-max-width)',
+								fontSize: 'var(--editor-font-size)',
+								lineHeight: 'var(--editor-line-height)',
+								paddingLeft: isFullWidth ? '2rem' : '0',
+								paddingRight: isFullWidth ? '2rem' : '0',
+							}}
 						>
-							<EditorContent editor={editor} />
-							<FloatingComposer
-								editor={editor}
-								className="z-50 shadow-2xl rounded-2xl border dark:border-white/10 border-gray-200 dark:bg-gray-900/90 bg-white/90 backdrop-blur-xl"
-								style={{ width: 350 }}
-							/>
+							<EditorContent editor={editor} className="tiptap-notion-flow" />
+
+							<FloatingComposer editor={editor} />
 							<FloatingThreads threads={threads} editor={editor} />
+
+							<div className="h-[40vh]" />
 						</motion.div>
-						<div className="h-40 w-full" />
 					</main>
 				</ContextMenuTrigger>
 
-				<ContextMenuContent className="w-52 rounded-[20px] border dark:bg-black/80 dark:border-white/10 backdrop-blur-3xl p-2 shadow-2xl">
-					<ContextMenuLabel className="text-[10px] font-black tracking-[0.15em] uppercase dark:text-white/30 text-gray-400 px-2 py-1.5">
-						頁面邊距
-					</ContextMenuLabel>
-					<ContextMenuRadioGroup
-						value={String(margin)}
-						onValueChange={(val) => updateMargin(Number(val) as 10 | 20 | 30)}
-					>
-						{([10, 20, 30] as const).map((m) => (
-							<ContextMenuRadioItem
-								key={m}
-								value={String(m)}
-								className="rounded-xl gap-2 font-medium py-2.5 cursor-pointer justify-between"
+				<ContextMenuContent className="z-[60] w-64 rounded-[28px] border dark:bg-black/80 bg-white/90 backdrop-blur-3xl p-3 shadow-2xl space-y-2 border-white/10">
+					<div className="px-2 py-2">
+						<div
+							className="flex items-center justify-between group cursor-pointer"
+							onClick={() => {
+								const newValue = !isFullWidth
+								setIsFullWidth(newValue)
+							}}
+						>
+							<div className="flex items-center gap-3">
+								<div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+									<Layout size={16} />
+								</div>
+								<span className="text-sm font-bold dark:text-gray-200 text-gray-800">全寬模式</span>
+							</div>
+							<div
+								className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isFullWidth ? 'bg-blue-500' : 'bg-gray-300 dark:bg-white/10'}`}
 							>
-								<span>{m === 10 ? '窄邊距' : m === 20 ? '中邊距' : '寬邊距'}</span>
-								<span className="font-mono text-[11px] dark:text-white/30 text-gray-400">
-									{m}mm
-								</span>
-							</ContextMenuRadioItem>
-						))}
-					</ContextMenuRadioGroup>
+								<motion.div
+									animate={{ x: isFullWidth ? 22 : 2 }}
+									className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100" />
+
+					<div className="px-3 py-3 space-y-4">
+						<div className="flex justify-between items-center">
+							<span className="text-[10px] font-black tracking-widest uppercase opacity-50 flex items-center gap-2">
+								<Type size={12} /> Font Size
+							</span>
+							<span className="text-xs font-mono font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-lg">
+								{fontSize}px
+							</span>
+						</div>
+						<input
+							type="range"
+							min="12"
+							max="32"
+							step="1"
+							value={fontSize}
+							onChange={(e) => setFontSize(Number(e.target.value))}
+							className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
+						/>
+					</div>
+
+					<div className="px-3 py-3 space-y-4">
+						<div className="flex justify-between items-center">
+							<span className="text-[10px] font-black tracking-widest uppercase opacity-50 flex items-center gap-2">
+								<AlignLeft size={12} /> Line Height
+							</span>
+							<span className="text-xs font-mono font-bold text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded-lg">
+								{lineHeight}
+							</span>
+						</div>
+						<input
+							type="range"
+							min="1"
+							max="2.5"
+							step="0.1"
+							value={lineHeight}
+							onChange={(e) => setLineHeight(Number(e.target.value))}
+							className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
+						/>
+					</div>
+
+					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100" />
+
+					<ContextMenuItem className="rounded-xl py-2.5 text-red-400 focus:text-red-400 focus:bg-red-400/10 gap-2 font-bold cursor-pointer">
+						<Trash2 size={16} /> 刪除此文件
+					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
 

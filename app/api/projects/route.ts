@@ -3,7 +3,6 @@ import { getSupabaseAdmin } from '@/lib/supabase/supabaseAdmin'
 import { customAlphabet } from 'nanoid'
 import { NextRequest, NextResponse } from 'next/server'
 
-// 產生 8 碼大寫英數邀請碼，e.g. "A3BX9KLM"
 const nanoid = customAlphabet('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 8)
 
 export async function POST(req: NextRequest) {

@@ -1,6 +1,6 @@
 'use client'
 
-import api from '@/lib/api' 
+import api from '@/lib/api'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 export default function JoinProjectPage() {
 	const router = useRouter()
-    const { inviteCode } = useParams()
+	const { inviteCode } = useParams()
 	const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
 	const [projectName, setProjectName] = useState('')
 
@@ -17,20 +17,18 @@ export default function JoinProjectPage() {
 			if (!inviteCode) return
 
 			try {
-                // 呼叫 API 加入專案
 				const res: any = await api.post('/projects/join', { inviteCode })
-                const { project } = res.data
+				const { project } = res.data
 				setProjectName(project.name)
 
 				setStatus('success')
-				// 成功後延遲跳轉
 				setTimeout(() => router.push(`/projects/${project.id}`), 1500)
 			} catch (err: any) {
 				console.error(err)
-                if (err.response?.status === 401) {
-                    router.push(`/signIn?callbackUrl=/projects/join/${inviteCode}`)
-                    return
-                }
+				if (err.response?.status === 401) {
+					router.push(`/signIn?callbackUrl=/projects/join/${inviteCode}`)
+					return
+				}
 				setStatus('error')
 			}
 		}
@@ -40,7 +38,6 @@ export default function JoinProjectPage() {
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-[#fdfbfa] dark:bg-gray-950 relative overflow-hidden">
-			{/* 背景霓虹光暈 */}
 			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 blur-[120px] rounded-full animate-pulse" />
 
 			<motion.div
@@ -64,7 +61,7 @@ export default function JoinProjectPage() {
 					<motion.div initial={{ y: 10 }} animate={{ y: 0 }} className="space-y-6">
 						<CheckCircle2 className="w-12 h-12 mx-auto text-green-500 animate-bounce" />
 						<h2 className="text-xl font-black tracking-tight dark:text-white">
-							成功加入 {projectName}！o(≧v≦)o
+							成功加入 {projectName}！
 						</h2>
 						<p className="text-[10px] font-bold tracking-[0.3em] uppercase text-green-500/80">
 							Membership Synchronized
@@ -75,9 +72,7 @@ export default function JoinProjectPage() {
 				{status === 'error' && (
 					<motion.div initial={{ y: 10 }} animate={{ y: 0 }} className="space-y-6">
 						<XCircle className="w-12 h-12 mx-auto text-red-500" />
-						<h2 className="text-xl font-black tracking-tight dark:text-white">
-							糟糕，連結失效了 Q_Q
-						</h2>
+						<h2 className="text-xl font-black tracking-tight dark:text-white">連結失效了!</h2>
 						<button
 							onClick={() => router.push('/')}
 							className="text-sm font-bold text-blue-500 hover:underline"
