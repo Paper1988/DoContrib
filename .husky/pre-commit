@@ -1,1 +1,3 @@
-echo '🚀 跳過代碼檢查，準備提交'
+#!/bin/sh
+
+echo '🔍 Checking staged changes...'
