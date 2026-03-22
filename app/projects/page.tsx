@@ -68,7 +68,7 @@ export default function ProjectsPage() {
 		<motion.div
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			className="min-h-screen dark:bg-[#0a0a0a] bg-gray-50 transition-colors duration-300"
+			className="min-h-screen dark:bg-[#0a0a0a] bg-[#fdfbfa] transition-colors duration-300"
 		>
 			<AppNavbar
 				breadcrumbs={[

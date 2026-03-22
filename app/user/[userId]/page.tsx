@@ -21,6 +21,7 @@ import {
 	Shield,
 	Activity,
 	Settings,
+	FolderKanban,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -32,6 +33,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly'
 import remarkEmoji from 'remark-emoji'
 import remarkGemoji from 'remark-gemoji'
 import remarkGfm from 'remark-gfm'
+import AppNavbar from '@/components/navigation/AppNavbar'
 
 export default function ProfilePage() {
 	const { userId } = useParams()
@@ -41,15 +43,18 @@ export default function ProfilePage() {
 	const [isSaving, setIsSaving] = useState(false)
 	const [bioText, setBioText] = useState('')
 	const [fetchError, setFetchError] = useState<string | null>(null)
+	const [stats, setStats] = useState<any | null>(null)
 
 	useEffect(() => {
 		async function fetchProfile() {
 			try {
-				const res = await api.get(`/profile/${userId}`)
-				const data = res.data
-				if (!data) throw new Error('API 回傳空資料')
-				setProfile(data)
-				setBioText(data.bio || '')
+				const [profileRes, statsRes] = await Promise.all([
+					api.get(`/profile/${userId}`),
+					api.get(`/profile/${userId}/stats`),
+				])
+				setProfile(profileRes.data)
+				setStats(statsRes.data)
+				setBioText(profileRes.data.bio || '')
 			} catch (error: any) {
 				setFetchError(error?.response?.data?.error || error?.message || '載入失敗，請重新整理')
 			}
@@ -77,47 +82,33 @@ export default function ProfilePage() {
 			animate={{ opacity: 1 }}
 			className="min-h-screen dark:bg-[#0a0a0a] bg-gray-50 transition-colors duration-300"
 		>
-			{/* Top Navbar */}
-			<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-white/90 backdrop-blur-xl flex items-center px-6 gap-4">
-				<div className="w-7 h-7 rounded-full flex items-center justify-center">
-					<Image src="/DoContrib.jpg" alt="Logo" width={32} height={32} className="rounded-full " />
-				</div>
-				<span className="font-bold text-sm dark:text-white text-gray-900">DoContrib</span>
-
-				<Separator orientation="vertical" className="h-5 mx-1 dark:bg-white/10" />
-
-				<nav className="flex items-center gap-1 text-sm flex-1">
-					<Link href="/">
-						<Button
-							variant="ghost"
-							size="sm"
-							className="h-8 px-3 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
-						>
-							<Home className="w-3.5 h-3.5" /> 首頁
-						</Button>
-					</Link>
-				</nav>
-
-				{isCurrentUser && (
-					<Link href={`/user/${userId}/dashboard`}>
-						<Button
-							size="sm"
-							className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
-						>
-							<BarChart3 className="w-3.5 h-3.5" /> 儀表板
-						</Button>
-					</Link>
-				)}
-			</header>
+			<AppNavbar
+				breadcrumbs={[
+					{ label: '首頁', href: '/', icon: <Home className="w-3 h-3" /> },
+					{
+						label: '個人檔案',
+						icon: <FolderKanban className="w-3 h-3 text-blue-500" />,
+					},
+				]}
+				actions={[
+					isCurrentUser && (
+						<Link href={`/user/${userId}/dashboard`}>
+							<Button
+								size="sm"
+								className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
+							>
+								<BarChart3 className="w-3.5 h-3.5" /> 儀表板
+							</Button>
+						</Link>
+					),
+				]}
+			/>
 
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 				<div className="flex flex-col lg:flex-row gap-6">
-					{/* ── 左側 Sidebar ── */}
 					<aside className="lg:w-72 shrink-0 space-y-4">
-						{/* 頭像卡 */}
 						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl overflow-hidden">
-							{/* Cover gradient */}
-							<div className="h-20 bg-gradient-to-br from-blue-600/80 via-blue-500/60 to-violet-600/50" />
+							<div className="h-20 dark:bg-white/5 bg-gray-100" />
 							<CardContent className="px-5 pb-5 -mt-10">
 								<div className="relative w-16 h-16 rounded-2xl overflow-hidden ring-4 dark:ring-[#111] ring-white shadow-lg mb-3">
 									{profile.image ? (
@@ -136,7 +127,7 @@ export default function ProfilePage() {
 										</h2>
 										{isCurrentUser && (
 											<Badge className="mt-1 text-[10px] px-2 py-0.5 bg-blue-500/15 text-blue-500 border-blue-500/20 border rounded-full font-semibold tracking-wide">
-												Owner
+												Me
 											</Badge>
 										)}
 									</div>

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { supabase } from '@/lib/supabase/supabase'
+import api from '@/lib/api'
 import { motion } from 'framer-motion'
 import {
 	BarChart3,
@@ -13,16 +13,16 @@ import {
 	Layout,
 	LogOut,
 	Settings,
-	Sparkles,
 	User,
 	Activity,
 	FolderKanban,
 	ChevronRight,
+	Plus,
 } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import AppNavbar from '@/components/navigation/AppNavbar'
 
 export default function DashboardPage() {
 	const { data: session, status } = useSession()
@@ -39,19 +39,10 @@ export default function DashboardPage() {
 
 	const fetchUserStats = async () => {
 		try {
-			const { count: projectCount } = await supabase
-				.from('project_members')
-				.select('*', { count: 'exact', head: true })
-				.eq('user_id', session?.user?.id)
-
-			const { count: contributionCount } = await supabase
-				.from('contributions')
-				.select('*', { count: 'exact', head: true })
-				.eq('user_id', session?.user?.id)
-
+			const res = await api.get(`/profile/${session?.user?.id}/stats`)
 			setStats({
-				projectCount: projectCount || 0,
-				contributionCount: contributionCount || 0,
+				projectCount: res.data.projectCount,
+				contributionCount: res.data.contributionCount,
 			})
 		} catch (error) {
 			console.error('獲取統計資料失敗:', error)
@@ -73,61 +64,26 @@ export default function DashboardPage() {
 			animate={{ opacity: 1 }}
 			className="min-h-screen dark:bg-[#0a0a0a] bg-gray-50 transition-colors duration-300"
 		>
-			{/* ── Top Navbar ── */}
-			<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-white/90 backdrop-blur-xl flex items-center px-6 gap-4">
-				<div className="flex items-center gap-2">
-					<div className="w-7 h-7 rounded-full flex items-center justify-center">
-						<Image
-							src="/DoContrib.jpg"
-							alt="Logo"
-							width={32}
-							height={32}
-							className="rounded-full"
-						/>
-					</div>
-					<span className="font-bold text-sm dark:text-white text-gray-900">DoContrib</span>
-				</div>
-
-				<Separator orientation="vertical" className="h-5 mx-1 dark:bg-white/10" />
-
-				<nav className="flex items-center gap-1 flex-1">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => router.push('/')}
-						className="h-8 px-3 rounded-lg text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
-					>
-						<Home className="w-3.5 h-3.5" /> 首頁
-					</Button>
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => router.push('/projects')}
-						className="h-8 px-3 rounded-lg text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium gap-1.5"
-					>
-						<FolderKanban className="w-3.5 h-3.5" /> 專案
-					</Button>
-				</nav>
-
-				{/* 右側 avatar */}
-				<Avatar
-					className="w-7 h-7 cursor-pointer"
-					onClick={() => router.push(`/user/${session?.user?.id}`)}
-				>
-					<AvatarImage src={session?.user?.image ?? ''} />
-					<AvatarFallback className="text-xs bg-blue-500/20 text-blue-500 font-semibold">
-						{firstName[0]}
-					</AvatarFallback>
-				</Avatar>
-			</header>
+			<AppNavbar
+				breadcrumbs={[
+					{ label: '首頁', href: '/', icon: <Home className="w-3 h-3" /> },
+					{
+						label: '個人檔案',
+						href: `/user/${session?.user?.id}`,
+						icon: <FolderKanban className="w-3 h-3" />,
+					},
+					{
+						label: '儀表板',
+						icon: <BarChart3 className="w-3 h-3 text-blue-500" />,
+					},
+				]}
+			/>
 
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 				<div className="flex flex-col lg:flex-row gap-6">
-					{/* ── 左側 Sidebar ── */}
 					<aside className="lg:w-72 shrink-0 space-y-4">
-						{/* 用戶卡 */}
 						<Card className="dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 rounded-2xl overflow-hidden">
-							<div className="h-16 bg-gradient-to-br from-blue-600/80 via-blue-500/60 to-violet-600/50" />
+							<div className="h-20 dark:bg-white/5 bg-gray-100" />
 							<CardContent className="px-5 pb-5 -mt-8">
 								<Avatar className="w-14 h-14 ring-4 dark:ring-[#111] ring-white shadow-lg mb-3">
 									<AvatarImage src={session?.user?.image ?? ''} />

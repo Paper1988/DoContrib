@@ -21,8 +21,7 @@ export default function AppNavbar({ breadcrumbs, actions }: AppNavbarProps) {
 	const router = useRouter()
 
 	return (
-		<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-white/90 backdrop-blur-xl flex items-center px-6 gap-4">
-			{/* Logo */}
+		<header className="sticky top-0 z-50 h-14 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/90 bg-[#fdfbfa]/90 backdrop-blur-xl flex items-center px-6 gap-4">
 			<button onClick={() => router.push('/')} className="flex items-center gap-2 shrink-0">
 				<div className="w-7 h-7 rounded-full overflow-hidden">
 					<Image src="/DoContrib.jpg" alt="Logo" width={28} height={28} className="rounded-full" />
@@ -30,7 +29,6 @@ export default function AppNavbar({ breadcrumbs, actions }: AppNavbarProps) {
 				<span className="font-bold text-sm dark:text-white text-gray-900">DoContrib</span>
 			</button>
 
-			{/* Breadcrumbs */}
 			{breadcrumbs && breadcrumbs.length > 0 && (
 				<>
 					<Separator orientation="vertical" className="h-5 dark:bg-white/10" />
