@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ChevronRight, FolderKanban, Home, Sparkles } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
@@ -63,10 +63,8 @@ export default function AppNavbar({ breadcrumbs, actions }: AppNavbarProps) {
 				</>
 			)}
 
-			{/* 沒有 breadcrumb 時的空白填充 */}
 			{(!breadcrumbs || breadcrumbs.length === 0) && <div className="flex-1" />}
 
-			{/* 右側 actions */}
 			{actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
 		</header>
 	)

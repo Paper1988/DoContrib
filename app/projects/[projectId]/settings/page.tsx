@@ -22,6 +22,14 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { showCustomToast } from '@/lib/ui'
 import Image from 'next/image'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+import { useSession } from 'next-auth/react'
 
 interface Member {
 	id: string
@@ -44,11 +52,29 @@ export default function ProjectSettings() {
 	const [project, setProject] = useState<ProjectData | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [copied, setCopied] = useState(false)
+	const { data: session } = useSession()
+	const isOwner = project?.members?.find((m) => m.id === session?.user?.id)?.role === 'owner'
+
+	const handleRoleChange = async (memberId: string, role: string) => {
+		try {
+			await api.patch(`/projects/${projectId}/members/${memberId}`, { role })
+			setProject((prev) =>
+				prev
+					? {
+							...prev,
+							members: prev.members.map((m) => (m.id === memberId ? { ...m, role } : m)),
+						}
+					: prev
+			)
+		} catch (err) {
+			console.error('修改權限失敗:', err)
+		}
+	}
 
 	useEffect(() => {
 		const fetchProjectData = async () => {
 			try {
-				const res: any = await api.get(`/projects/${projectId}`)
+				const res = await api.get(`/projects/${projectId}`)
 				setProject(res.data.project)
 			} catch (err) {
 				console.error('載入專案失敗:', err)
@@ -198,15 +224,36 @@ export default function ProjectSettings() {
 														</Badge>
 													) : (
 														<>
-															<Badge className="text-[10px] px-2 py-0.5 dark:bg-white/5 bg-gray-100 dark:text-gray-400 text-gray-500 border-0 rounded-full font-medium">
-																Member
-															</Badge>
-															<button
-																onClick={() => handleRemoveMember(member.id)}
-																className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 dark:hover:bg-red-500/10 hover:bg-red-50 text-red-500 transition-all"
-															>
-																<Trash2 className="w-3.5 h-3.5" />
-															</button>
+															{isOwner ? (
+																<Select
+																	value={member.role}
+																	onValueChange={(role) => handleRoleChange(member.id, role)}
+																>
+																	<SelectTrigger className="h-7 w-24 text-xs rounded-lg dark:bg-white/5 bg-gray-50 dark:border-white/8 border-gray-200 dark:text-gray-300 text-gray-600 focus:ring-0">
+																		<SelectValue />
+																	</SelectTrigger>
+																	<SelectContent className="rounded-xl dark:bg-[#1a1a1a] dark:border-white/10 text-xs">
+																		<SelectItem value="editor" className="text-xs rounded-lg">
+																			Editor
+																		</SelectItem>
+																		<SelectItem value="viewer" className="text-xs rounded-lg">
+																			Viewer
+																		</SelectItem>
+																	</SelectContent>
+																</Select>
+															) : (
+																<Badge className="text-[10px] px-2 py-0.5 dark:bg-white/5 bg-gray-100 dark:text-gray-400 text-gray-500 border-0 rounded-full font-medium capitalize">
+																	{member.role}
+																</Badge>
+															)}
+															{isOwner && (
+																<button
+																	onClick={() => handleRemoveMember(member.id)}
+																	className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 dark:hover:bg-red-500/10 hover:bg-red-50 text-red-500 transition-all"
+																>
+																	<Trash2 className="w-3.5 h-3.5" />
+																</button>
+															)}
 														</>
 													)}
 												</div>
