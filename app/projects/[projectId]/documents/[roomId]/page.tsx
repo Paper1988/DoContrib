@@ -491,12 +491,6 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 							className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
 						/>
 					</div>
-
-					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100" />
-
-					<ContextMenuItem className="rounded-xl py-2.5 text-red-400 focus:text-red-400 focus:bg-red-400/10 gap-2 font-bold cursor-pointer">
-						<Trash2 size={16} /> 刪除此文件
-					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
 
