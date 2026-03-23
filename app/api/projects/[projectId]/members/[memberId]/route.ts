@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function PATCH(
 	req: NextRequest,
-	{ params }: { params: { projectId: string; memberId: string } }
+	{ params }: { params: Promise<{ projectId: string; memberId: string }> }
 ) {
 	try {
 		const user = await requireAuth()
-		const { projectId, memberId } = params
+		const { projectId, memberId } = await params
 		const { role } = await req.json()
 		const supabase = getSupabaseAdmin()
 
