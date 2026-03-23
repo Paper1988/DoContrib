@@ -46,11 +46,11 @@ export async function PATCH(
 
 export async function DELETE(
 	req: NextRequest,
-	{ params }: { params: { projectId: string; memberId: string } }
+	{ params }: { params: Promise<{ projectId: string; memberId: string }> }
 ) {
 	try {
 		const user = await requireAuth()
-		const { projectId, memberId } = params
+		const { projectId, memberId } = await params
 		const supabase = getSupabaseAdmin()
 
 		const { data: requester } = await supabase
