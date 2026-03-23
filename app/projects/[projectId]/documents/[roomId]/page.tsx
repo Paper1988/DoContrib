@@ -2,7 +2,7 @@
 
 import { Avatars } from '@/components/Avatars'
 import { CustomTaskItem } from '@/components/CustomTaskItem'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import ThemeToggle from '@/components/ThemeToggle'
 import { StaticToolbar } from '@/components/Toolbars'
 import { EditableTitle } from '@/components/document/EditableTitle'
 import Loading from '@/components/loading'
@@ -23,16 +23,7 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import debounce from 'lodash/debounce'
-import {
-	AlertTriangle,
-	ArrowLeft,
-	Monitor,
-	Share2,
-	Layout,
-	Type,
-	AlignLeft,
-	Trash2,
-} from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Monitor, Share2, Layout, Type, AlignLeft } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useParams, useRouter } from 'next/navigation'

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
 
-export function ThemeToggle() {
+export default function ThemeToggle() {
 	const [mounted, setMounted] = useState(false)
 	const { theme, setTheme } = useTheme()
 
@@ -13,7 +13,9 @@ export function ThemeToggle() {
 
 	if (!mounted) return <div className="w-10 h-10" />
 
-	const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+	const isDark =
+		theme === 'dark' ||
+		(theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 	return (
 		<motion.button
@@ -32,11 +34,7 @@ export function ThemeToggle() {
 					transition={{ type: 'spring', damping: 20, stiffness: 300 }}
 					className="dark:text-white text-gray-700"
 				>
-					{isDark ? (
-						<Sun className="w-5 h-5" />
-					) : (
-						<Moon className="w-5 h-5" />
-					)}
+					{isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
 				</motion.div>
 			</AnimatePresence>
 
