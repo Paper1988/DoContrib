@@ -23,7 +23,16 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import debounce from 'lodash/debounce'
-import { AlertTriangle, ArrowLeft, Monitor, Share2, Layout, Type, AlignLeft } from 'lucide-react'
+import {
+	AlertTriangle,
+	ArrowLeft,
+	Monitor,
+	Share2,
+	Layout,
+	Type,
+	AlignLeft,
+	Trash2,
+} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useParams, useRouter } from 'next/navigation'
@@ -50,40 +59,30 @@ function useIsMobile() {
 	return isMobile
 }
 
+// MobileBlocker — 統一新風格
 function MobileBlocker() {
 	const router = useRouter()
 	const { projectId } = useParams()
 
 	return (
-		<div className="fixed inset-0 z-200 flex items-center justify-center p-6 bg-[#fdfbfa] dark:bg-gray-950">
-			<div className="absolute inset-0 pointer-events-none dark:bg-grid-white/[0.02] bg-grid-gray-900/[0.02]" />
-			<motion.div
-				initial={{ scale: 0.9, opacity: 0, y: 20 }}
-				animate={{ scale: 1, opacity: 1, y: 0 }}
-				className="relative max-w-sm w-full p-10 rounded-[40px] border dark:bg-black/40 bg-white/60 backdrop-blur-3xl dark:border-white/10 border-gray-200 shadow-2xl text-center"
-			>
-				<motion.div
-					animate={{ rotate: [-6, 6, -6], y: [0, -4, 0] }}
-					transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-					className="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-8"
-				>
-					<Monitor className="w-10 h-10 text-blue-500" />
-				</motion.div>
-				<h2 className="text-2xl font-black mb-4 tracking-tight">請改用電腦編輯</h2>
-				<p className="dark:text-gray-400 text-gray-600 mb-0 leading-relaxed text-sm">
-					為了提供最穩定且完整的協作編輯體驗，DoContrib 目前僅支援桌面端瀏覽器。
+		<div className="fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 dark:bg-[#0a0a0a] bg-[#fdfbfa]">
+			<div className="w-full max-w-sm">
+				<div className="w-12 h-12 rounded-2xl dark:bg-white/5 bg-gray-100 flex items-center justify-center mx-auto mb-6">
+					<Monitor className="w-5 h-5 dark:text-gray-400 text-gray-500" />
+				</div>
+				<h2 className="text-lg font-bold dark:text-white text-gray-900 text-center mb-2">
+					請改用電腦編輯
+				</h2>
+				<p className="text-sm dark:text-gray-500 text-gray-400 text-center mb-8 leading-relaxed">
+					為了提供最穩定的協作體驗，DoContrib 編輯器目前僅支援桌面端瀏覽器。
 				</p>
-
 				<button
 					onClick={() => router.push(`/projects/${projectId}/documents`)}
-					className="mt-8 w-full h-14 rounded-2xl font-bold dark:bg-white dark:text-black bg-gray-900 text-white shadow-xl"
+					className="w-full h-10 rounded-xl text-sm font-semibold dark:bg-white dark:text-black bg-gray-900 text-white transition-all hover:opacity-90"
 				>
 					返回列表
 				</button>
-				<div className="pt-8 border-t dark:border-white/5 border-gray-100 italic text-[10px] text-gray-400 uppercase tracking-widest">
-					desktop only experience
-				</div>
-			</motion.div>
+			</div>
 		</div>
 	)
 }
@@ -126,10 +125,7 @@ function DocumentPageContent({ params }: { params: Promise<{ roomId: string }> }
 	}, [status, router])
 
 	const PageWrapper = ({ children }: { children: ReactNode }) => (
-		<div className="relative min-h-screen w-full overflow-hidden dark:bg-gray-950 bg-[#fdfbfa] transition-colors duration-500">
-			<div className="absolute inset-0 pointer-events-none dark:bg-grid-white/[0.02] bg-grid-grid-gray-900/[0.02]" />
-			<div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
-			<div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-purple-500/10 blur-[120px] rounded-full" />
+		<div className="min-h-screen w-full dark:bg-[#0a0a0a] bg-[#fdfbfa] transition-colors duration-300">
 			{children}
 		</div>
 	)
@@ -159,34 +155,19 @@ function DocumentPageContent({ params }: { params: Promise<{ roomId: string }> }
 
 function SaveIndicator({ status }: { status: '已同步' | '儲存中' | '錯誤' }) {
 	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			className="flex items-center gap-3 px-5 py-2.5 rounded-2xl backdrop-blur-3xl border dark:border-white/10 border-gray-200 dark:bg-black/40 bg-white/80 shadow-2xl"
-		>
-			<div className="relative">
-				{status === '儲存中' && (
-					<motion.div
-						animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.2, 0.5] }}
-						transition={{ repeat: Infinity, duration: 2 }}
-						className="absolute inset-0 bg-blue-500 blur-md rounded-full"
-					/>
+		<div className="flex items-center gap-2 px-3 py-1.5 rounded-lg dark:bg-[#111] bg-white border dark:border-white/8 border-gray-200 shadow-sm">
+			<div
+				className={clsx(
+					'w-1.5 h-1.5 rounded-full transition-colors duration-500',
+					status === '已同步'
+						? 'bg-green-500'
+						: status === '儲存中'
+							? 'bg-blue-500 animate-pulse'
+							: 'bg-red-500'
 				)}
-				<div
-					className={clsx(
-						'w-2 h-2 rounded-full transition-colors duration-500',
-						status === '已同步'
-							? 'bg-green-500 shadow-[0_0_10px_#22c55e]'
-							: status === '儲存中'
-								? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]'
-								: 'bg-red-500 shadow-[0_0_10px_#ef4444]'
-					)}
-				/>
-			</div>
-			<span className="text-[10px] font-black tracking-[0.2em] uppercase dark:text-gray-400 text-gray-500">
-				{status === '已同步' ? '已同步' : status === '儲存中' ? '儲存中' : '錯誤'}
-			</span>
-		</motion.div>
+			/>
+			<span className="text-[11px] font-medium dark:text-gray-400 text-gray-500">{status}</span>
+		</div>
 	)
 }
 
@@ -207,7 +188,8 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 	const editorStyle = {
 		'--editor-font-size': `${fontSize}px`,
 		'--editor-line-height': lineHeight,
-		'--editor-max-width': isFullWidth ? '100%' : '850px', // Notion 的黃金閱讀寬度是 850px
+		'--editor-max-width': isFullWidth ? '100%' : '850px',
+		transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
 	} as React.CSSProperties
 
 	const [saveStatus, setSaveStatus] = useState<'已同步' | '儲存中' | '錯誤'>('已同步')
@@ -232,8 +214,10 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 		immediatelyRender: false,
 		editorProps: {
 			attributes: {
-				class:
+				class: clsx(
 					'focus:outline-none min-h-[800px] prose prose-blue dark:prose-invert max-w-none transition-all',
+					editorStyle
+				),
 			},
 		},
 		extensions: [
@@ -314,36 +298,31 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 			<motion.header
 				initial={{ y: -20, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
-				className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-between px-4 sm:px-8 backdrop-blur-3xl border-b dark:border-white/5 border-gray-100 dark:bg-black/40 bg-[#fdfbfa]/80"
+				className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-4 sm:px-6 border-b dark:border-white/5 border-gray-200 dark:bg-[#0a0a0a]/95 bg-[#fdfbfa]/95 backdrop-blur-xl"
 			>
-				{/* 左側：返回 + 標題 */}
-				<div className="flex items-center gap-2 sm:gap-4 flex-none min-w-0 max-w-[30%] xl:max-w-[20%]">
+				<div className="flex items-center gap-2 flex-none min-w-0 max-w-[30%] xl:max-w-[25%]">
 					<button
 						onClick={() => router.back()}
-						className="p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:scale-90 shrink-0"
+						className="p-2 rounded-lg hover:dark:bg-white/5 hover:bg-gray-100 transition-all active:scale-90 shrink-0"
 					>
-						<ArrowLeft className="w-5 h-5 text-gray-500" />
+						<ArrowLeft className="w-4 h-4 dark:text-gray-400 text-gray-500" />
 					</button>
 					<div className="min-w-0 overflow-hidden">
 						<EditableTitle initialTitle={documentData.title} roomId={roomId} />
 					</div>
 				</div>
 
-				{/* 中間：工具列，flex-1 讓它佔用剩餘空間 */}
 				<div className="flex-1 flex justify-center items-center px-2 sm:px-4 min-w-0 overflow-hidden">
 					<StaticToolbar editor={editor} />
 				</div>
 
-				{/* 右側：Avatars + Theme + Share */}
-				<div className="flex items-center justify-end gap-1.5 sm:gap-3 flex-none">
+				<div className="flex items-center justify-end gap-1.5 sm:gap-2 flex-none">
 					<div className="scale-75 sm:scale-90 origin-right flex items-center shrink-0">
 						<Avatars />
 					</div>
-					<div className="hidden md:block h-6 w-px dark:bg-white/10 bg-gray-200" />
+					<div className="hidden md:block h-5 w-px dark:bg-white/10 bg-gray-200" />
 					<ThemeToggle />
-					<motion.button
-						whileHover={{ y: -2 }}
-						whileTap={{ scale: 0.95 }}
+					<button
 						disabled={!projectData}
 						onClick={() => {
 							if (projectData?.invite_code) {
@@ -352,159 +331,153 @@ function DocumentView({ roomId, projectId }: { roomId: string; projectId: string
 								)
 								showCustomToast({
 									isDark: resolvedTheme === 'dark',
-									title: '📄 連結已複製',
-									message: `連結已存至剪貼簿`,
+									title: '🔗 連結已複製',
+									message: '連結已存至剪貼簿',
 									duration: 2000,
 									type: 'success',
 								})
 							}
 						}}
 						className={clsx(
-							'group relative h-9 sm:h-10 px-4 sm:px-6 rounded-2xl overflow-hidden shrink-0',
-							'bg-blue-600 text-white transition-all duration-300',
-							'shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)]',
-							'disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed'
+							'h-8 px-4 rounded-lg text-xs font-semibold gap-1.5 shrink-0 flex items-center',
+							'bg-blue-600 hover:bg-blue-700 text-white transition-colors',
+							'disabled:opacity-40 disabled:cursor-not-allowed'
 						)}
 					>
-						<div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-						<div className="flex items-center gap-2 relative">
-							<Share2 className="w-4 h-4 transition-transform group-hover:rotate-12" />
-							{/* 小螢幕隱藏文字，只顯示圖示 */}
-							<span className="hidden sm:inline text-xs font-black tracking-widest uppercase">
-								分享
-							</span>
-						</div>
-						<div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-					</motion.button>
+						<Share2 className="w-3.5 h-3.5" />
+						<span className="hidden sm:inline">分享</span>
+					</button>
 				</div>
 			</motion.header>
-
 			<ContextMenu>
 				<ContextMenuTrigger asChild>
 					<main
 						style={editorStyle}
-						className="pt-32 pb-20 overflow-y-auto no-scrollbar h-screen flex flex-col items-center bg-transparent"
+						className="pt-16 h-screen overflow-y-auto no-scrollbar dark:bg-[#0a0a0a] bg-[#fdfbfa]"
 					>
-						<div className="w-auto h-5 shrink-0" />
 						<motion.div
-							initial={{ opacity: 0, y: 10 }}
+							initial={{ opacity: 0, y: 8 }}
 							animate={{
 								opacity: loading ? 0.4 : 1,
-								y: loading ? 20 : 0,
-								filter: loading ? 'blur(8px)' : 'blur(0px)',
+								y: loading ? 8 : 0,
+								filter: loading ? 'blur(4px)' : 'blur(0px)',
 							}}
-							className={clsx(
-								'relative z-10 transition-all duration-500 ease-in-out py-16 md:py-24',
-								'bg-transparent'
-							)}
+							transition={{ duration: 0.3 }}
+							className="max-w-3xl mx-auto px-6 sm:px-12 py-16 min-h-full"
 							style={{
-								width: 'var(--editor-max-width)',
 								fontSize: 'var(--editor-font-size)',
 								lineHeight: 'var(--editor-line-height)',
-								paddingLeft: isFullWidth ? '2rem' : '0',
-								paddingRight: isFullWidth ? '2rem' : '0',
+								maxWidth: isFullWidth ? '100%' : undefined,
+								paddingLeft: isFullWidth ? '3rem' : undefined,
+								paddingRight: isFullWidth ? '3rem' : undefined,
 							}}
 						>
-							<EditorContent editor={editor} className="tiptap-notion-flow" />
-
+							<EditorContent editor={editor} className="notion-prose tiptap-notion-flow" />
 							<FloatingComposer editor={editor} />
 							<FloatingThreads threads={threads} editor={editor} />
-
 							<div className="h-[40vh]" />
 						</motion.div>
 					</main>
 				</ContextMenuTrigger>
 
-				<ContextMenuContent className="z-[60] w-64 rounded-[28px] border dark:bg-black/80 bg-white/90 backdrop-blur-3xl p-3 shadow-2xl space-y-2 border-white/10">
-					<div className="px-2 py-2">
-						<div
-							className="flex items-center justify-between group cursor-pointer"
-							onClick={() => {
-								const newValue = !isFullWidth
-								setIsFullWidth(newValue)
-							}}
-						>
-							<div className="flex items-center gap-3">
-								<div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
-									<Layout size={16} />
-								</div>
-								<span className="text-sm font-bold dark:text-gray-200 text-gray-800">全寬模式</span>
-							</div>
-							<div
-								className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isFullWidth ? 'bg-blue-500' : 'bg-gray-300 dark:bg-white/10'}`}
-							>
-								<motion.div
-									animate={{ x: isFullWidth ? 22 : 2 }}
-									className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
-								/>
-							</div>
+				<ContextMenuContent className="z-[80] w-60 rounded-2xl border dark:bg-[#1a1a1a] dark:border-white/10 bg-white border-gray-200 p-2 shadow-xl space-y-1">
+					<button
+						onClick={() => setIsFullWidth(!isFullWidth)}
+						className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl dark:hover:bg-white/5 hover:bg-gray-50 transition-colors"
+					>
+						<div className="flex items-center gap-2.5 text-sm dark:text-gray-300 text-gray-700">
+							<Layout className="w-4 h-4 dark:text-gray-500 text-gray-400" />
+							全寬模式
 						</div>
-					</div>
+						<div
+							className={clsx(
+								'w-8 h-4 rounded-full transition-colors duration-200 relative shrink-0',
+								isFullWidth ? 'bg-blue-500' : 'dark:bg-white/10 bg-gray-200'
+							)}
+						>
+							<div
+								className={clsx(
+									'absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all duration-200',
+									isFullWidth ? 'left-4' : 'left-0.5'
+								)}
+							/>
+						</div>
+					</button>
 
-					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100" />
+					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100 my-1" />
 
-					<div className="px-3 py-3 space-y-4">
-						<div className="flex justify-between items-center">
-							<span className="text-[10px] font-black tracking-widest uppercase opacity-50 flex items-center gap-2">
-								<Type size={12} /> Font Size
-							</span>
-							<span className="text-xs font-mono font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-lg">
+					<div className="px-3 py-2 space-y-2">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-2 text-xs dark:text-gray-500 text-gray-400">
+								<Type className="w-3.5 h-3.5" />
+								字體大小
+							</div>
+							<span className="text-xs font-mono dark:text-blue-400 text-blue-500 dark:bg-blue-500/10 bg-blue-50 px-1.5 py-0.5 rounded-md">
 								{fontSize}px
 							</span>
 						</div>
 						<input
 							type="range"
-							min="12"
-							max="32"
+							min="13"
+							max="24"
 							step="1"
 							value={fontSize}
 							onChange={(e) => setFontSize(Number(e.target.value))}
-							className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-500"
+							className="w-full h-1 rounded-full appearance-none cursor-pointer accent-blue-500 dark:bg-white/10 bg-gray-200"
 						/>
 					</div>
 
-					<div className="px-3 py-3 space-y-4">
-						<div className="flex justify-between items-center">
-							<span className="text-[10px] font-black tracking-widest uppercase opacity-50 flex items-center gap-2">
-								<AlignLeft size={12} /> Line Height
-							</span>
-							<span className="text-xs font-mono font-bold text-purple-500 bg-purple-500/10 px-2 py-0.5 rounded-lg">
+					<div className="px-3 py-2 space-y-2">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-2 text-xs dark:text-gray-500 text-gray-400">
+								<AlignLeft className="w-3.5 h-3.5" />
+								行距
+							</div>
+							<span className="text-xs font-mono dark:text-violet-400 text-violet-500 dark:bg-violet-500/10 bg-violet-50 px-1.5 py-0.5 rounded-md">
 								{lineHeight}
 							</span>
 						</div>
 						<input
 							type="range"
-							min="1"
+							min="1.2"
 							max="2.5"
-							step="0.1"
+							step="0.05"
 							value={lineHeight}
 							onChange={(e) => setLineHeight(Number(e.target.value))}
-							className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
+							className="w-full h-1 rounded-full appearance-none cursor-pointer accent-violet-500 dark:bg-white/10 bg-gray-200"
 						/>
 					</div>
+
+					<ContextMenuSeparator className="dark:bg-white/5 bg-gray-100 my-1" />
+
+					<ContextMenuItem className="rounded-xl gap-2 text-sm px-3 py-2.5 text-red-500 focus:bg-red-500/10 focus:text-red-500 cursor-pointer">
+						<Trash2 className="w-3.5 h-3.5" /> 刪除此文件
+					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
 
 			<AnimatePresence>
 				{error && (
 					<motion.div
-						initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-						animate={{ opacity: 1, backdropFilter: 'blur(12px)' }}
-						className="fixed inset-0 z-110 flex items-center justify-center p-4 bg-black/20"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
 					>
 						<motion.div
-							initial={{ scale: 0.9, opacity: 0, y: 20 }}
+							initial={{ scale: 0.95, opacity: 0, y: 10 }}
 							animate={{ scale: 1, opacity: 1, y: 0 }}
-							className="max-w-md w-full p-8 rounded-[32px] border dark:bg-black/60 bg-white/80 dark:border-white/10 border-gray-200 shadow-2xl text-center"
+							className="w-full max-w-sm p-8 rounded-2xl border dark:bg-[#111] bg-white dark:border-white/8 border-gray-200 shadow-xl text-center"
 						>
-							<div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-								<AlertTriangle className="w-8 h-8 text-red-500" />
+							<div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+								<AlertTriangle className="w-5 h-5 text-red-500" />
 							</div>
-							<h2 className="text-2xl font-bold mb-2">載入發生錯誤</h2>
-							<p className="dark:text-gray-400 text-gray-600 mb-8">{error}</p>
+							<h2 className="text-base font-bold dark:text-white text-gray-900 mb-2">
+								載入發生錯誤
+							</h2>
+							<p className="text-sm dark:text-gray-400 text-gray-500 mb-6">{error}</p>
 							<button
 								onClick={() => router.push(`/projects/${projectId}/documents`)}
-								className="w-full h-14 rounded-2xl font-bold dark:bg-white dark:text-black bg-gray-900 text-white shadow-xl"
+								className="w-full h-9 rounded-xl text-xs font-semibold dark:bg-white dark:text-black bg-gray-900 text-white transition-all hover:opacity-90"
 							>
 								返回列表
 							</button>

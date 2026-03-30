@@ -15,7 +15,7 @@ export function Spinner({ size = 16, className, ...props }: Props) {
 			viewBox="0 0 16 16"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			className={clsx('animate-spin dark:text-white/40 text-gray-900/40', className)}
+			className={clsx('animate-spin dark:text-gray-600 text-gray-400', className)}
 			{...props}
 		>
 			<path
@@ -32,10 +32,7 @@ export function Spinner({ size = 16, className, ...props }: Props) {
 export function DocumentSpinner() {
 	return (
 		<div className="flex items-center justify-center w-full h-full min-h-[200px]">
-			<div className="relative flex items-center justify-center">
-				<div className="absolute inset-0 blur-2xl dark:bg-white/5 bg-gray-900/5 rounded-full" />
-				<Spinner size={32} className="relative z-10 dark:text-white/60 text-gray-900/60" />
-			</div>
+			<Spinner size={24} />
 		</div>
 	)
 }

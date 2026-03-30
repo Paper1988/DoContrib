@@ -25,8 +25,7 @@ import {
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkCjkFriendly from 'remark-cjk-friendly'
@@ -44,6 +43,7 @@ export default function ProfilePage() {
 	const [bioText, setBioText] = useState('')
 	const [fetchError, setFetchError] = useState<string | null>(null)
 	const [stats, setStats] = useState<any | null>(null)
+	const router = useRouter()
 
 	useEffect(() => {
 		async function fetchProfile() {
@@ -92,14 +92,16 @@ export default function ProfilePage() {
 				]}
 				actions={[
 					isCurrentUser && (
-						<Link href={`/user/${userId}/dashboard`}>
-							<Button
-								size="sm"
-								className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
-							>
-								<BarChart3 className="w-3.5 h-3.5" /> 儀表板
-							</Button>
-						</Link>
+						<Button
+							size="sm"
+							className="h-8 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold gap-1.5"
+							onClick={(e) => {
+								router.push(`/user/${userId}/dashboard`)
+							}}
+							key={'dashboard'}
+						>
+							<BarChart3 className="w-3.5 h-3.5" /> 儀表板
+						</Button>
 					),
 				]}
 			/>

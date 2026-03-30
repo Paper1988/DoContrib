@@ -27,71 +27,71 @@
 	}
 }
 
-/* 讓編輯器更像一個有機體 */
-.tiptap-notion-flow .tiptap {
-	@apply outline-none text-lg leading-relaxed;
+/* Notion 風格 prose 覆寫 */
+.notion-prose {
+	--tw-prose-body: theme('colors.gray.800');
+	--tw-prose-headings: theme('colors.gray.900');
+	--tw-prose-invert-body: theme('colors.gray.200');
+	--tw-prose-invert-headings: theme('colors.white');
 }
 
-/* 針對 Notion 風格的 Placeholder 優化 */
-.tiptap p.is-editor-empty:first-child::before {
-	content: attr(data-placeholder);
-	float: left;
-	color: #adb5bd;
-	pointer-events: none;
-	height: 0;
-	@apply font-medium transition-opacity duration-300;
+.dark .notion-prose {
+	color: rgb(229 231 235);
 }
 
-/* 讓圖片與 YouTube 嵌入更美觀 */
-.tiptap img {
-	@apply rounded-[24px] border dark:border-white/10 border-gray-200 shadow-xl my-8 max-w-full;
+.notion-prose h1 {
+	@apply text-4xl font-bold tracking-tight mb-2 mt-10;
 }
-
-.tiptap iframe {
-	@apply rounded-[24px] border dark:border-white/10 border-gray-200 shadow-2xl my-8 w-full aspect-video;
+.notion-prose h2 {
+	@apply text-2xl font-semibold tracking-tight mb-2 mt-8;
 }
-
-/* 針對你的 Z-Gen Design: 選取文字時的霓虹感 */
-.tiptap ::selection {
-	@apply bg-blue-500/30 text-blue-100;
+.notion-prose h3 {
+	@apply text-xl font-semibold mb-1 mt-6;
 }
-
-/* 游標本體 */
-.collaboration-cursor__caret {
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
-	border-left: 2px solid; /* 顏色會由 inline style 注入 */
-	height: 1.2em;
-	width: 0;
-	margin-left: -1px;
-	margin-right: -1px;
-	pointer-events: none;
-	/* 霓虹發光感 */
-	filter: drop-shadow(0 0 6px currentColor);
-	transition: all 0.2s ease;
+.notion-prose p {
+	@apply leading-relaxed mb-4;
 }
-
-/* 名字標籤 (強磨砂質感) */
-.collaboration-cursor__label {
-	position: absolute;
-	top: -1.4em;
-	left: -1px;
-	font-size: 10px;
-	font-weight: 900;
-	line-height: 1;
-	white-space: nowrap;
-	color: #fff;
-	padding: 4px 8px;
-	border-radius: 6px 6px 6px 0;
-	pointer-events: none;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-
-	/* 磨砂玻璃效果 */
-	backdrop-filter: blur(12px);
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.notion-prose blockquote {
+	@apply border-l-4 border-gray-200 dark:border-white/10 pl-4 italic text-gray-500 dark:text-gray-400 my-4;
+}
+.notion-prose code {
+	@apply text-sm bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-md font-mono;
+}
+.notion-prose pre {
+	@apply bg-gray-100 dark:bg-white/5 rounded-xl p-5 overflow-x-auto border dark:border-white/8 border-gray-200 my-6;
+}
+.notion-prose pre code {
+	@apply bg-transparent p-0;
+}
+.notion-prose hr {
+	@apply border-gray-200 dark:border-white/10 my-8;
+}
+.notion-prose a {
+	@apply text-blue-500 underline underline-offset-2 hover:text-blue-400 transition-colors;
+}
+.notion-prose ul {
+	@apply list-disc pl-6 space-y-1 my-3;
+}
+.notion-prose ol {
+	@apply list-decimal pl-6 space-y-1 my-3;
+}
+.notion-prose li {
+	@apply leading-relaxed;
+}
+.notion-prose img {
+	@apply rounded-2xl border dark:border-white/10 border-gray-200 shadow-md my-8 max-w-full;
+}
+.notion-prose iframe {
+	@apply rounded-2xl border dark:border-white/10 border-gray-200 shadow-md my-8 w-full aspect-video;
+}
+.notion-prose table {
+	@apply w-full text-sm border-collapse my-6;
+}
+.notion-prose th {
+	@apply text-left px-4 py-2 border-b dark:border-white/10 border-gray-200 font-semibold dark:text-white text-gray-900;
+}
+.notion-prose td {
+	@apply px-4 py-2 border-b dark:border-white/10 border-gray-200 dark:text-gray-300 text-gray-700;
 }
 
 @theme inline {

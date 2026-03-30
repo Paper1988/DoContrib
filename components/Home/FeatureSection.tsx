@@ -46,7 +46,6 @@ export default function FeatureSection() {
 	return (
 		<section className="py-20 sm:py-32 px-5 sm:px-8 relative z-10 w-full overflow-hidden">
 			<div className="max-w-6xl mx-auto">
-				{/* 標題區 */}
 				<div className="mb-12 sm:mb-20 text-center md:text-left">
 					<h2 className="font-bold uppercase tracking-[0.2em] text-blue-500 text-xs sm:text-sm mb-4">
 						Core Features
@@ -58,9 +57,7 @@ export default function FeatureSection() {
 					</h3>
 				</div>
 
-				{/* 佈局：手機版展示板在上(flex-col-reverse)，桌面版並排 */}
 				<div className="flex flex-col-reverse md:grid md:grid-cols-12 gap-8 lg:gap-12 items-start">
-					{/* 左側：互動 List */}
 					<div className="w-full md:col-span-5 space-y-4">
 						{features.map((f) => {
 							const isActive = activeId === f.id
@@ -71,7 +68,6 @@ export default function FeatureSection() {
 									onClick={() => setActiveId(f.id)}
 									className="group relative cursor-pointer"
 								>
-									{/* 效能優化 1：捨棄 layoutId，改用常駐 DOM + opacity 切換發光背景 */}
 									<div
 										className={`absolute inset-0 rounded-[32px] bg-blue-500/10 blur-xl transition-opacity duration-500 pointer-events-none ${isActive ? 'opacity-100' : 'opacity-0'}`}
 									/>
@@ -106,7 +102,6 @@ export default function FeatureSection() {
 													{f.title}
 												</h4>
 
-												{/* 效能優化 2：文字展開動畫簡化，使用 grid-rows 技巧或 AnimatePresence (不加 blur) */}
 												<AnimatePresence initial={false}>
 													{isActive && (
 														<motion.div
@@ -130,9 +125,8 @@ export default function FeatureSection() {
 						})}
 					</div>
 					<div className="w-full md:col-span-7 md:sticky md:top-32 z-20">
-						<div className="relative p-6 sm:p-10 rounded-[32px] border dark:border-white/10 border-gray-200 dark:bg-black/40 bg-white/80 backdrop-blur-3xl shadow-2xl overflow-hidden min-h-[360px] flex flex-col justify-center">
+						<div className="relative p-6 sm:p-10 rounded-[32px] border dark:border-white/10 border-gray-200 dark:bg-black/40 bg-white/80 backdrop-blur-sm shadow-2xl overflow-hidden min-h-[360px] flex flex-col justify-center">
 							<AnimatePresence mode="wait">
-								{/* 情境一：貢獻透明化 (模擬排行榜) */}
 								{activeId === 'feat-1' && (
 									<motion.div
 										key="feat-1"
@@ -150,7 +144,7 @@ export default function FeatureSection() {
 												本週專案貢獻榜
 											</p>
 										</div>
-										{/* 模擬三個隊友的貢獻條 */}
+
 										{[
 											{ name: 'You', score: 92, color: 'bg-blue-500' },
 											{ name: 'Teammate A', score: 78, color: 'bg-purple-500' },
@@ -176,7 +170,6 @@ export default function FeatureSection() {
 									</motion.div>
 								)}
 
-								{/* 情境二：磨砂 UI 介面 (模擬浮動工具列) */}
 								{activeId === 'feat-2' && (
 									<motion.div
 										key="feat-2"
@@ -191,7 +184,7 @@ export default function FeatureSection() {
 												Try to hover me
 											</p>
 										</div>
-										{/* 模擬一個極致的玻璃擬態工具列 */}
+
 										<motion.div
 											whileHover={{
 												scale: 1.05,
@@ -205,7 +198,6 @@ export default function FeatureSection() {
 													className="p-3 rounded-xl dark:hover:bg-white/10 hover:bg-gray-200 transition-colors dark:text-gray-300 text-gray-700"
 												>
 													<div className="w-5 h-5 rounded bg-current opacity-80" />{' '}
-													{/* 這裡可以用真實的 Lucide Icon 代替 */}
 												</div>
 											))}
 											<div className="w-[1px] h-8 dark:bg-white/20 bg-gray-300 mx-2" />
@@ -216,7 +208,6 @@ export default function FeatureSection() {
 									</motion.div>
 								)}
 
-								{/* 情境三：安全權限控管 (模擬成員管理) */}
 								{activeId === 'feat-3' && (
 									<motion.div
 										key="feat-3"
@@ -268,10 +259,6 @@ export default function FeatureSection() {
 									</motion.div>
 								)}
 							</AnimatePresence>
-
-							{/* 背景裝飾光暈 */}
-							<div className="absolute top-[-20%] right-[-10%] w-72 h-72 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none will-change-transform" />
-							<div className="absolute bottom-[-20%] left-[-10%] w-72 h-72 bg-purple-500/5 blur-[100px] rounded-full pointer-events-none will-change-transform" />
 						</div>
 					</div>
 				</div>

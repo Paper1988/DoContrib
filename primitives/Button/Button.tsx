@@ -16,23 +16,18 @@ const getButtonClass = (
 	className?: string
 ) =>
 	clsx(
-		'inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 ease-out',
-		'rounded-xl active:scale-[0.96] hover:scale-[1.02]',
-		'disabled:opacity-30 disabled:pointer-events-none',
-
-		hasIcon && !hasChildren ? 'p-2' : 'px-4 py-2 text-sm',
-
+		'inline-flex items-center justify-center gap-2 font-medium text-sm transition-all duration-200',
+		'rounded-lg active:scale-[0.97]',
+		'disabled:opacity-40 disabled:pointer-events-none',
+		hasIcon && !hasChildren ? 'p-2' : 'px-4 py-2',
 		{
-			'dark:bg-white dark:text-black bg-gray-900 text-white shadow-lg hover:shadow-white/10':
+			'dark:bg-white dark:text-black bg-gray-900 text-white hover:opacity-90 shadow-sm':
 				variant === 'primary',
-
-			'dark:bg-white/5 bg-gray-900/5 dark:text-white/80 text-gray-800 border dark:border-white/10 border-gray-900/10 dark:hover:bg-white/10 hover:bg-gray-900/10':
+			'dark:bg-white/5 bg-gray-100 dark:text-gray-300 text-gray-700 border dark:border-white/8 border-gray-200 dark:hover:bg-white/10 hover:bg-gray-200':
 				variant === 'secondary',
-
-			'bg-transparent dark:text-gray-400 text-gray-500 dark:hover:bg-white/5 hover:bg-gray-900/5':
+			'bg-transparent dark:text-gray-400 text-gray-500 dark:hover:bg-white/5 hover:bg-gray-100 dark:hover:text-white hover:text-gray-900':
 				variant === 'subtle',
-
-			'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white':
+			'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20':
 				variant === 'destructive',
 		},
 		className
